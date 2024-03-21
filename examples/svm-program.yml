@@ -1,0 +1,11 @@
+stackvm:
+  version: "0.0.0"
+  program
+    depends:
+    - test-svm.yml    
+    definition: |
+      start:
+        push 7
+        call c2f
+        end
+        

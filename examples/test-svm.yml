@@ -1,0 +1,83 @@
+stackvm:
+  version: "0.0.0"
+  package:
+  - name: Test_Functions
+    description: Test functions
+    version: "0.0.0"
+    functions:
+    - function:
+      name: f2c
+      description: |
+        Convert fahrenheit to celsius.
+        Accepts 1 parameter on the top of the stack
+        c = (f - 32) * 5 / 9
+      definition: |
+        push 32
+        sub
+        push 5
+        mul
+        push 9
+        div
+    - function:
+      name: c2f
+      description: |
+        Convert celsius to fahrenheit.
+        Accepts 1 parameter on the top of the stack
+        f = (c * 9) / 5 + 32
+      definition: |
+        push 9
+        mul
+        push 5
+        div
+        push 32
+        add
+    - function:
+      name: rFactorial
+      description: |
+        Recursive factorial function.
+        Accepts 1 parameter on the top of the stack
+      definition: |
+        start:
+          put _1      # save param value
+          cmp 0
+          blt error   # n < 0?
+          beq ret1    # n == 0?
+          push 1
+          sub         # n = n - 1
+          call factorial # fact(n - 1)
+          get _1
+          mul         # n = n * fact(n - 1)
+          pop
+          end
+        error:
+          pop
+          err "Invalid value" # n < 0 => error
+        ret1:
+          pop
+          push 1      # n == 0 => 1
+          end
+    - function:
+      name: factorial
+      description: |
+        Factorial function.
+        Accepts 1 parameter on the top of the stack
+      definition: |
+        start:
+          put _1      # save param value
+          cmp 0
+          blt error   # n < 0?
+          put result, 1
+        loop:
+          get result    # push value of result
+          mul           
+          put result    # result = result * n
+          push 1
+          sub           # n = n - 1
+          cmp 1
+          bgt loop      # n > 0?
+          pop
+          get result
+          end
+        error:
+          pop
+          err "Invalid value" # n < 0 => error
