@@ -55,8 +55,13 @@ The instructions sent to the VM are a stream of OpCodes followed by zero, one or
 ```
 
 Example:
-    [ 1,3, 1,2, 8, 4,"x", 5,"factorial" ]
 
+```
+[ 1,3, 1,2, 8, 4,"x", 5,"factorial" ]
+```
+
+With opcodes:
+```
 [
     push, 3,
     push, 2,
@@ -64,3 +69,4 @@ Example:
     put, "x",
     call, "factorial"
 ]
+```

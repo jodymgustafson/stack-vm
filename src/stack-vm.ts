@@ -64,7 +64,7 @@ export class StackVmError extends Error {
 export class StackVM {
     private stack: StackVmStack = [];
     // Stack frames to hold local variables
-    private variables: VariablesMap[] = [];
+    private varStack: VariablesMap[] = [];
     // Result of the last compare
     private compareResult = 0;
 
@@ -74,7 +74,7 @@ export class StackVM {
      */
     constructor(readonly functions: FunctionsMap, globalVars?: VariablesMap) {
         if (globalVars) {
-            this.variables.push(globalVars);
+            this.varStack.push(globalVars);
         }
     }
 
@@ -96,7 +96,7 @@ export class StackVM {
      */
     private runFrame(code: StackVmCode): number {
         // Push a new variables context
-        this.variables.push({});
+        this.varStack.push({});
 
         let tmp: number;    
         for (let pc = 0; pc < code.length; pc++) {
@@ -182,7 +182,7 @@ export class StackVM {
         }
 
         // Pop stack frame
-        this.variables.pop();
+        this.varStack.pop();
         // Return the value on the stack
         return this.pop();
     }
@@ -208,7 +208,7 @@ export class StackVM {
         if (typeof name !== "string") throw new StackVmError("Undefined variable name");
         // Set variable in the current stack frame
         const v = value ?? this.peek();
-        this.variables[this.variables.length - 1][name] = v;
+        this.varStack[this.varStack.length - 1][name] = v;
     }
 
     private getVariable(name: string): number {
@@ -216,8 +216,8 @@ export class StackVM {
 
         // Walk up the stack frames to find the variable
         let val: number;
-        for (let i = this.variables.length - 1; i >= 0 && val == null; i--) {
-            val = this.variables[i][name];
+        for (let i = this.varStack.length - 1; i >= 0 && val == null; i--) {
+            val = this.varStack[i][name];
         }
 
         if (val == null) throw new StackVmError("Unknown variable: " + name);
