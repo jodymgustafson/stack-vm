@@ -1,12 +1,11 @@
 stackvm:
   version: "0.0.0"
   package:
-  - name: Test_Functions
+    name: Test_Functions
     description: Test functions
     version: "0.0.0"
     functions:
-    - function:
-      name: f2c
+    - name: f2c
       description: |
         Convert fahrenheit to celsius.
         Accepts 1 parameter on the top of the stack
@@ -18,8 +17,7 @@ stackvm:
         mul
         push 9
         div
-    - function:
-      name: c2f
+    - name: c2f
       description: |
         Convert celsius to fahrenheit.
         Accepts 1 parameter on the top of the stack
@@ -31,8 +29,7 @@ stackvm:
         div
         push 32
         add
-    - function:
-      name: rFactorial
+    - name: rFactorial
       description: |
         Recursive factorial function.
         Accepts 1 parameter on the top of the stack
@@ -56,8 +53,7 @@ stackvm:
           pop
           push 1      # n == 0 => 1
           end
-    - function:
-      name: factorial
+    - name: factorial
       description: |
         Factorial function.
         Accepts 1 parameter on the top of the stack

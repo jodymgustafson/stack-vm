@@ -1,4 +1,4 @@
-import { StackVmAtom, OpCode, StackVmCode } from "./stack-vm";
+import { OpCode, StackVmCode } from "./stack-vm";
 
 type AsmInstruction = {
     opcode: OpCode;
@@ -22,7 +22,7 @@ export class StackVmAssembler {
     private instructions: AsmInstruction[];
 
     /**
-     * Assembles a StackVM program into ByteCode.
+     * Assembles a StackVM program into code that can be executed by the VM.
      * @param code A program string or array of lines of code
      */
     assemble(code: string | string[]): StackVmCode {
@@ -40,11 +40,14 @@ export class StackVmAssembler {
             }
         }
 
-        // this.resolveLabels();
-        return this.getInstructions();
+        return this.getStackVmCode();
     }
 
-    private getInstructions(): StackVmCode {
+    /**
+     * Converts the parsed instructions into StackVM code and resolves addresses of labels
+     * @returns Code that can be executed by the VM
+     */
+    private getStackVmCode(): StackVmCode {
         const program: StackVmCode = [];
         for (const i of this.instructions) {
             program.push(i.opcode);
@@ -64,7 +67,19 @@ export class StackVmAssembler {
         return program;
     }
 
-    private parseLine(line: string, lineNo: number) {
+    private getLabelAddress(instr: AsmInstruction): number {
+        const addr = this.labels[instr.label];
+        if (addr == null) throw new StackVmAssemblerError(`Reference to unknown label '${instr.label}'`, instr.line);
+        return addr;
+    }
+
+    /**
+     * Parses a line of assembly code into an instruction and adds it to the
+     * list of instructions if it contains executable code
+     * @param line A line of assembly code
+     * @param lineNo Line number in the source file
+     */
+    private parseLine(line: string, lineNo: number): void {
         const parts = line.split(" ");
         const token = parts[0];
         if (parts.length > 0 && !token.startsWith("#")) {
@@ -94,16 +109,9 @@ export class StackVmAssembler {
     }
 
     private getOpCode(s: string, line: number): OpCode {
-        const oc = OpCode[s];
+        const oc = OpCode[s.toLowerCase()];
         if (oc === undefined) throw new StackVmAssemblerError(`Invalid opcode '${s}'`, line);
         return oc;
-    }
-
-    private getLabelAddress(instr: AsmInstruction): number {
-        const label = instr.label
-        const addr = this.labels[label];
-        if (!addr) throw new StackVmAssemblerError(`Reference to unknown label '${label}'`, instr.line);
-        return addr;
     }
 
     private isBranchOp(opcode: OpCode): boolean {
@@ -123,6 +131,7 @@ export class StackVmAssembler {
             return undefined;
 
         switch (opcode) {
+            // All of these ops expect a string
             case OpCode.beq:
             case OpCode.bgt:
             case OpCode.blt:
@@ -133,6 +142,7 @@ export class StackVmAssembler {
             case OpCode.put:
             case OpCode.call:
                 return value;
+            // All other ops expect a number
             default:
                 return parseFloat(value);
         }
