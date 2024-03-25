@@ -144,6 +144,8 @@ export class StackVmAssembler {
                 return value;
             // All other ops expect a number
             default:
+                if (value.charAt(0) === "$") return parseInt(value.slice(1), 16);
+                if (value.charAt(0) === "%") return parseInt(value.slice(1), 2);
                 return parseFloat(value);
         }
     }

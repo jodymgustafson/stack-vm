@@ -4,6 +4,33 @@ import { OpCode } from "../src/stack-vm";
 describe("When assemble code", () => {
     const assembler = new StackVmAssembler();
 
+    describe("and uses numbers with different bases", () => {
+        it("should parse hex numbers", () => {
+            const prog = assembler.assemble([
+                "push $23"
+            ]);
+            expect(assembler["instructions"]).toEqual([
+                { opcode: OpCode.push, value: 0x23, line: 0 },
+            ]);
+        });
+        it("should parse binary numbers", () => {
+            const prog = assembler.assemble([
+                "push %10101010"
+            ]);
+            expect(assembler["instructions"]).toEqual([
+                { opcode: OpCode.push, value: 0b10101010, line: 0 },
+            ]);
+        });
+        it("should parse decimal numbers", () => {
+            const prog = assembler.assemble([
+                "push 32"
+            ]);
+            expect(assembler["instructions"]).toEqual([
+                { opcode: OpCode.push, value: 32, line: 0 },
+            ]);
+        });
+    });
+
     describe("and has no branches", () => {
         it("should create bytecode", () => {
             const prog = assembler.assemble([
