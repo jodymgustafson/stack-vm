@@ -1,12 +1,10 @@
-// export type OpCodeNames = "push" | "pop" | "add" | "sub" | "mul" | "div"| "pow" | "call" | "get" | "put" | "end";
-
 export enum OpCode {
-    noop = 0,
+    nop = 0,
     push,
     pop,
     get,
     put,
-    put_n,
+    putc,
     call,
     end,
     err,
@@ -16,13 +14,19 @@ export enum OpCode {
     div,
     pow,
     cmp,
-    cmp_n,
-    cmp_x,
+    cmpc,
+    cmpv,
     bra,
     beq,
     bne,
     blt,
     bgt,
+    and,
+    or,
+    xor,
+    not,
+    shlc,
+    shrc
 }
 
 export type StackVmStack = { //number[];
@@ -102,7 +106,7 @@ export class StackVM {
         for (let pc = 0; pc < code.length; pc++) {
             const opcode = code[pc];
             // Noop does nothing
-            if (opcode === OpCode.noop) continue;
+            if (opcode === OpCode.nop) continue;
             // End immediately breaks out of the loop
             if (opcode === OpCode.end) break;
 
@@ -116,7 +120,7 @@ export class StackVM {
                 case OpCode.put:
                     this.setVariable(code[++pc] as string, this.peek());
                     break;
-                case OpCode.put_n:
+                case OpCode.putc:
                     this.setVariable(code[++pc] as string, code[++pc] as number);
                     break;
                 case OpCode.call:
@@ -137,18 +141,35 @@ export class StackVM {
                     tmp = this.pop();
                     this.stack.push(this.pop() / tmp);
                     break;
-                case OpCode.pow:
+                case OpCode.and:
                     tmp = this.pop();
-                    this.stack.push(Math.pow(this.stack.pop(), tmp));
+                    this.stack.push(this.pop() & tmp);
+                    break;
+                case OpCode.or:
+                    tmp = this.pop();
+                    this.stack.push(this.pop() | tmp);
+                    break;
+                case OpCode.xor:
+                    tmp = this.pop();
+                    this.stack.push(this.pop() ^ tmp);
+                    break;
+                case OpCode.not:
+                    this.stack.push(~this.pop());
+                    break;
+                case OpCode.shlc:
+                    this.stack.push(this.pop() << (code[++pc] as number));
+                    break;
+                case OpCode.shrc:
+                    this.stack.push(this.pop() >> (code[++pc] as number));
                     break;
                 case OpCode.cmp:
                     this.compareResult = this.compare(this.pop(), this.pop());
                     this.stack.push(this.compareResult);
                     break;
-                case OpCode.cmp_n:
+                case OpCode.cmpc:
                     this.compareResult = this.compare(this.peek(), code[++pc]);
                     break;
-                case OpCode.cmp_x:
+                case OpCode.cmpv:
                     this.compareResult = this.compare(this.peek(), this.getVariable(code[++pc] as string));
                     break;
                 case OpCode.bra:

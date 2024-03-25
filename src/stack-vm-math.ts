@@ -16,6 +16,7 @@ export const StackVmNativeMathLib: NativeFunctionsMap = {
     ln: s => Math.log(s.pop()),
     log: s => Math.log(s.pop()),
     log10: s => Math.log10(s.pop()),
+    pow: s => { const div = s.pop(); return s.pop() ** div; },
     round: s => Math.round(s.pop()),
     sin: s => Math.sin(s.pop()),
     sinh: s => Math.sinh(s.pop()),

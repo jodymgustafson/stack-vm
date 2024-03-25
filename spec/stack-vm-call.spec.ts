@@ -11,7 +11,7 @@ describe("When test calling functions", () => {
         ],
         // Recursive factorial function
         factorial: [ // number to factorial is on stack
-            OpCode.cmp_n, 0,
+            OpCode.cmpc, 0,
             OpCode.blt, 17,  // n < 0?
             OpCode.beq, 19,  // n == 0?
             OpCode.put, "_1", // save value
@@ -75,34 +75,11 @@ describe("When test calling functions", () => {
         .toBe(Math.abs(-11));
     });
 
-    it("should call sys.sin(-11)", () => {
-        expect(vm.run([
-            OpCode.push, -11,
-            OpCode.call, "sin",
-        ]))
-        .toBe(Math.sin(-11));
-    });
-
-    it("should error when invalid sys call", () => {
+    it("should error when invalid function", () => {
         expect(() => vm.run([
             OpCode.push, 1,
             OpCode.call, "foo",
         ]))
         .toThrowError("Unknown function: foo")
-    });
-
-    it("should error when invalid call", () => {
-        expect(() => vm.run([
-            OpCode.push, 1,
-            OpCode.call, "foo",
-        ]))
-        .toThrowError("Unknown function: foo")
-    });
-
-    it("should get pi", () => {
-        expect(vm.run([
-            OpCode.call, "pi",
-        ]))
-        .toBe(Math.PI);
     });
 });

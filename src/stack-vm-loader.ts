@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import YAML from 'yaml';
+import { StackVM } from "./stack-vm";
 
 export class StackVmLoaderError extends Error {
 }
@@ -21,16 +22,34 @@ export type StackVmFile = {
     stackvm: {
         version: string;
         package?: StackVmPackage
+        depends?: string[];
     }
 };
 
-export class StackVmFileLoader {
-    constructor(readonly filePath: string) {}
+/**
+ * Loads a program from a YAML file
+ */
+export class StackVmLoader {
+    // constructor(readonly vm: StackVM) {}
 
-    loadSync(): StackVmFile {
-        const s = fs.readFileSync(this.filePath, "utf-8");
-        const content = YAML.parse(s);
+    /**
+     * Loads the program from a YAML file
+     * @returns The contents of the file as a StackVmFile object
+     */
+    loadSync(filePath: string): StackVmFile {
+        const s = fs.readFileSync(filePath, "utf-8");
+        const content = YAML.parse(s) as StackVmFile;
         if (!content.stackvm) throw new StackVmLoaderError("File does not conform to StackVM format");
+
+        if (content.stackvm.depends) {
+            for (const dep of content.stackvm.depends) {
+
+            }
+        }
+
+        if (content.stackvm.package) {
+        }
+
         return content;
     } 
 }

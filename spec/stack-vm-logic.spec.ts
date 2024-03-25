@@ -45,7 +45,7 @@ describe("When test logic ops", () => {
     it("should compare value on stack equal to a number", () => {
         expect(vm.run([
             OpCode.push, 7,
-            OpCode.cmp_n, 7,
+            OpCode.cmpc, 7,
             OpCode.call, "compare",
         ]))
         .toBe(0); // 7 == 7
@@ -54,7 +54,7 @@ describe("When test logic ops", () => {
     it("should compare value on stack less than a number", () => {
         expect(vm.run([
             OpCode.push, 4,
-            OpCode.cmp_n, 7,
+            OpCode.cmpc, 7,
             OpCode.call, "compare",
         ]))
         .toBe(-1); // 4 < 7
@@ -63,7 +63,7 @@ describe("When test logic ops", () => {
     it("should compare value on stack greater than a number", () => {
         expect(vm.run([
             OpCode.push, 9,
-            OpCode.cmp_n, 7,
+            OpCode.cmpc, 7,
             OpCode.call, "compare",
         ]))
         .toBe(1); // 9 > 7
@@ -72,7 +72,7 @@ describe("When test logic ops", () => {
     it("should compare value on stack equal to a variable", () => {
         expect(vm.run([
             OpCode.push, 5,
-            OpCode.cmp_x, "x",
+            OpCode.cmpv, "x",
             OpCode.call, "compare",
         ]))
         .toBe(0);
@@ -81,7 +81,7 @@ describe("When test logic ops", () => {
     it("should compare value on stack less than a variable", () => {
         expect(vm.run([
             OpCode.push, 3,
-            OpCode.cmp_x, "x",
+            OpCode.cmpv, "x",
             OpCode.call, "compare",
         ]))
         .toBe(-1);
@@ -90,7 +90,7 @@ describe("When test logic ops", () => {
     it("should compare value on stack greater than a variable", () => {
         expect(vm.run([
             OpCode.push, 8,
-            OpCode.cmp_x, "x",
+            OpCode.cmpv, "x",
             OpCode.call, "compare",
         ]))
         .toBe(1);

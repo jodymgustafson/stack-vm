@@ -2,7 +2,7 @@ stackvm:
   version: "0.0.0"
   program:
     depends:
-    - test-svm.yml    
+    - ./test-svm.yml    
     definition: |
       start:
         push 7
