@@ -1,8 +1,8 @@
 import { StackVM, OpCode } from "../src/stack-vm"
-import { StackVmNativeMathLib } from "../src/internal/stack-vm-math";
+import { StackVmSystemMathLib } from "../src/internal/stack-vm-math";
 
 describe("When test calling math functions", () => {
-    const vm = new StackVM(StackVmNativeMathLib, { x: 5 });
+    const vm = new StackVM(StackVmSystemMathLib, { x: 5 });
 
     it("should call abs(-11)", () => {
         expect(vm.run([
@@ -44,6 +44,16 @@ describe("When test calling math functions", () => {
             OpCode.call, "sin",
         ]))
             .toBe(Math.sin(-11));
+    });
+
+    it("should calculate sin(PI/2)", () => {
+        expect(vm.run([
+            OpCode.call, "pi",
+            OpCode.push, 2,
+            OpCode.div,
+            OpCode.call, "sin",
+        ]))
+            .toBe(Math.sin(Math.PI / 2));
     });
 
     it("should error when invalid sys call", () => {

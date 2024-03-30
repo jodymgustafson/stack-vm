@@ -1,4 +1,4 @@
-import { NativeFunction, StackVmStack } from "./internal/types";
+import { SystemFunction, StackVmStack } from "./internal/types";
 
 /** Op codes supported by the VM */
 export enum OpCode {
@@ -45,7 +45,7 @@ export type VariablesMap = Record<string, number | string>;
 /** Map of function names to their StackVM code */
 export type StackVmFunctionsMap = Record<string, StackVmCode>;
 
-export type FunctionsMap = Record<string, NativeFunction | StackVmCode>;
+export type FunctionsMap = Record<string, SystemFunction | StackVmCode>;
 
 /** An error thrown by the VM */
 export class StackVmError extends Error {

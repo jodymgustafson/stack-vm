@@ -7,7 +7,7 @@ type AsmInstruction = {
     label?: string;
 };
 
-type AssemblerError = {
+export type AssemblerError = {
     message: string;
     line: number;
 };
@@ -19,7 +19,7 @@ export class StackVmAssemblerError extends Error {
 }
 
 /**
- * An assembler for StackVM assembler code
+ * An assembler for StackVM assembly code
  */
 export class StackVmAssembler {
     // Keeps track of the program counter for resolving labels
@@ -91,7 +91,7 @@ export class StackVmAssembler {
      * @param lineNo Line number in the source file
      */
     private parseLine(line: string, lineNo: number): void {
-        const re = /\s*([_A-Za-z]\w+:)?\s*([A-Za-z]+)?\s*(\".*\"|[.]|[^#\s]+)?\s*(#.*)?/.exec(line);
+        const re = /\s*([_A-Za-z]\w*:)?\s*([A-Za-z]+)?\s*(\".*\"|[.]|[^#\s]+)?\s*(#.*)?/.exec(line);
         // re[1] = label
         // re[2] = opcode
         // re[3] = value

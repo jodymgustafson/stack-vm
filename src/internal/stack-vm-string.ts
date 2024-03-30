@@ -1,22 +1,29 @@
 import { StackVmError } from "../stack-vm";
-import { NativeFunctionsMap } from "./types";
+import { SystemFunctionsMap } from "./types";
 
 /**
- * The native library that contains string functions.
+ * The system library that contains string functions.
  * 
  * str.compare: Compare two strings and return -1, 0 or 1
  *   stack: [s1:string, s2:string]
  * 
- * str.append: Appends two strings
- *   stack: [startStr:string, endStr:string]
+ * str.append(startStr:string, endStr:string): Appends two strings
+ *   pushs "abc"
+ *   pushs "def"
+ *   call str.append
+ *   // returns "abcdef"
  * 
- * str.sub: Returns a substring of a string
- *   stack: [s:string, start:int, end:int]
+ * str.sub(s:string, start:int, end:int): Returns a substring of a string
+ *   pushs "abcdef"
+ *   push 1
+ *   push 4
+ *   call str.sub
+ *   // returns "bcd"
  * 
  * str.length: Returns the length of a string
  *   stack: [s:string]
  */
-export const StackVmNativeStringLib: NativeFunctionsMap = {
+export const StackVmNativeStringLib: SystemFunctionsMap = {
     "str.compare": s => {
         const b = s.pop();
         const a = s.pop();

@@ -1,12 +1,12 @@
-/** The stack used by the VM */
+/** Defines the stack used by the VM */
 export type StackVmStack = { // number|string[];
     push(n: number | string): void;
     pop<T = number | string>(): T;
     length: number;
 };
 
-/** Defines a native function that runs in the host outside of StackVM */
-export type NativeFunction = (stack: StackVmStack) => number | string;
+/** Defines a system function that runs in the host outside of StackVM */
+export type SystemFunction = (stack: StackVmStack) => number | string;
 
-/** Map of function names to native functions */
-export type NativeFunctionsMap = Record<string, NativeFunction>;
+/** Map of function names to system functions */
+export type SystemFunctionsMap = Record<string, SystemFunction>;

@@ -1,9 +1,9 @@
 import { StackVM, OpCode, FunctionsMap } from "../src/stack-vm"
-import { StackVmNativeMathLib } from "../src/internal/stack-vm-math";
+import { StackVmSystemMathLib } from "../src/internal/stack-vm-math";
 
 describe("When test calling functions", () => {
     const functions: FunctionsMap = {
-        ...StackVmNativeMathLib,
+        ...StackVmSystemMathLib,
         square: [ // number to square is on stack
             OpCode.put, "tmp", // put value into local variable
             OpCode.get, "tmp", // push it onto the stack

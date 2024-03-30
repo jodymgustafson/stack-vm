@@ -67,7 +67,7 @@ describe("When assemble code", () => {
         it("should resolve labels", () => {
             const prog = assembler.assemble([
                 "# Test program",
-                "start:    # start here",
+                "s:    # start here",
                 " ",
                 "  bra init",
                 "  nop",

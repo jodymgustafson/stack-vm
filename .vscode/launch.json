@@ -12,7 +12,7 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}\\index.ts",
-            "args": ["f2c", "90"],
+            "args": ["c2f", "10"],
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
             ]
