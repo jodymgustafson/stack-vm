@@ -1,5 +1,5 @@
 import { StackVM, OpCode, FunctionsMap } from "../src/stack-vm"
-import { StackVmNativeMathLib } from "../src/stack-vm-math";
+import { StackVmNativeMathLib } from "../src/internal/stack-vm-math";
 
 describe("When test calling functions", () => {
     const functions: FunctionsMap = {

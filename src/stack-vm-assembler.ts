@@ -4,7 +4,6 @@ type AsmInstruction = {
     opcode: OpCode;
     line: number;
     value?: string|number;
-    value2?: string|number;
     label?: string;
 };
 
@@ -18,7 +17,11 @@ export class StackVmAssemblerError extends Error {
  * An assembler for StackVM assembler code
  */
 export class StackVmAssembler {
+    // Keeps track of the program counter for resolving labels
+    private pc = 0;
+    // Map of labels to code index
     private labels: Record<string, number>;
+    // Array of parsed instructions
     private instructions: AsmInstruction[];
 
     /**
@@ -26,6 +29,7 @@ export class StackVmAssembler {
      * @param code A program string or array of lines of code
      */
     assemble(code: string | string[]): StackVmCode {
+        this.pc = 0;
         this.labels = {};
         this.instructions = [];
 
@@ -51,15 +55,12 @@ export class StackVmAssembler {
         const program: StackVmCode = [];
         for (const i of this.instructions) {
             program.push(i.opcode);
+
             if (i.label) {
                 // resolve the label's address
                 program.push(this.getLabelAddress(i));
             }
             else if (i.value !== undefined) {
-                program.push(i.value);
-            }
-
-            if (i.value2 !== undefined) {
                 program.push(i.value);
             }
         }
@@ -85,23 +86,45 @@ export class StackVmAssembler {
         if (parts.length > 0 && !token.startsWith("#")) {
             if (this.isLabel(token)) {
                 // Add a new label with addr set to the current position
-                this.labels[token.slice(0, -1)] = this.instructions.length;
+                this.labels[token.slice(0, -1)] = this.pc;
             }
             else {
                 const instr: AsmInstruction = {
                     opcode: this.getOpCode(token, lineNo),
                     line: lineNo
                 };
+                this.pc++;
+
+                const lblOrValue = this.parseLabelOrValue(parts)
                 if (this.isBranchOp(instr.opcode)) {
-                    instr.label = parts[1];
+                    instr.label = lblOrValue;
+                    this.pc++;
                 }
                 else {
-                    instr.value = this.getValue(instr.opcode, parts[1]);
+                    instr.value = this.getValue(instr.opcode, lblOrValue);
+                    if (instr.value != undefined) this.pc++;
                 }
 
                 this.instructions.push(instr);
             }
         }
+    }
+    
+    private parseLabelOrValue(parts: string[]): string {
+        let s = parts[1];
+        if (s && s.charAt(0) === '"') {
+            // Parse a quoted string
+            // Remove the start quote
+            let pieces = [s.slice(1)];
+            for (let i = 1; i < parts.length; i++) {
+                if (s.charAt(s.length - 1) === '"') break;
+                s = parts[i + 1];
+            }
+            // Remove the end quote
+            return pieces.join(" ").slice(0, -1);
+        }
+
+        return s;
     }
 
     private isLabel(token: string) {
@@ -132,6 +155,7 @@ export class StackVmAssembler {
 
         switch (opcode) {
             // All of these ops expect a string
+            case OpCode.pushs:
             case OpCode.beq:
             case OpCode.bgt:
             case OpCode.blt:

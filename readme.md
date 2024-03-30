@@ -6,6 +6,7 @@ Virtual machine that uses a stack for optimized computation of mathematical expr
 
 ### Stack
 - push n: Push a numeric value on the stack
+- pushs n: Push a string value on the stack
 - pop: Pop the value off the top of the stack and discard
 - get x: Push a variable's value on top of the stack
 - put x: Set a variable's value to the number on top of the stack
@@ -27,8 +28,8 @@ Virtual machine that uses a stack for optimized computation of mathematical expr
 
 ### Logic
 - cmp: Pop two values off the stack, compare them, push the result
-- cmpc n: Compares value on top of the stack to a constant number 
-- cmpv x: Compares value on top of the stack to the value of a variable 
+- cmpc n: Compares value on top of the stack to a constant number
+- cmpv x: Compares value on top of the stack to the value of a variable
 - bra x: Branches to a label
 - beq x: Branch to a label if a previous compare evaluated to equal
 - bne x: Branch to a label if a previous compare evaluated to not equal
@@ -62,10 +63,10 @@ push 3  # This is a comment
     end
 
 ## ByteCode
-The instructions sent to the VM are a stream of OpCodes followed by zero, one or two numbers and/or strings.
+The instructions sent to the VM are a stream of OpCodes followed by zero or one numbers or strings.
 ```
 [
-    OpCode, (string|number)?, (string|number)?, ...
+    OpCode, (string|number)?, ...
 ]
 ```
 
@@ -85,3 +86,4 @@ With opcodes:
     call, "factorial"
 ]
 ```
+

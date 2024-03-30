@@ -1,5 +1,8 @@
-import { FunctionsMap, NativeFunctionsMap, OpCode, StackVmFunctionsMap } from "./stack-vm";
+import { NativeFunctionsMap } from "./types";
 
+/**
+ * The native library that contains math functions.
+ */
 export const StackVmNativeMathLib: NativeFunctionsMap = {
     abs: s => Math.abs(s.pop()),
     acos: s => Math.acos(s.pop()),
@@ -16,7 +19,7 @@ export const StackVmNativeMathLib: NativeFunctionsMap = {
     ln: s => Math.log(s.pop()),
     log: s => Math.log(s.pop()),
     log10: s => Math.log10(s.pop()),
-    pow: s => { const div = s.pop(); return s.pop() ** div; },
+    pow: s => { const exp = s.pop() as number; return s.pop() as number ** exp; },
     round: s => Math.round(s.pop()),
     sin: s => Math.sin(s.pop()),
     sinh: s => Math.sinh(s.pop()),
@@ -27,13 +30,3 @@ export const StackVmNativeMathLib: NativeFunctionsMap = {
     pi: () => Math.PI,
     e: () => Math.E,
 }
-
-// const StackVmMathConstants: StackVmFunctionsMap = {
-//     pi: [OpCode.push, Math.PI],
-//     e: [OpCode.push, Math.E],
-// }
-
-// export const StackVmMathLib: FunctionsMap = {
-//     ...StackVmMathConstants,
-//     ...StackVmNativeMathLib,
-// }

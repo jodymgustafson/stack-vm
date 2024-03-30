@@ -1,6 +1,10 @@
+import { NativeFunction, StackVmStack } from "./internal/types";
+
+/** Op codes supported by the VM */
 export enum OpCode {
     nop = 0,
     push,
+    pushs,
     pop,
     get,
     put,
@@ -29,12 +33,6 @@ export enum OpCode {
     shrc
 }
 
-export type StackVmStack = { //number[];
-    push(n: number): void;
-    pop(): number;
-    length: number;
-};
-
 /** Defines a StackVM item in the stream */
 export type StackVmAtom = OpCode | number | string;
 
@@ -42,16 +40,10 @@ export type StackVmAtom = OpCode | number | string;
 export type StackVmCode = StackVmAtom[];
 
 /** Map of variable names to values */
-export type VariablesMap = Record<string, number>;
+export type VariablesMap = Record<string, number | string>;
 
 /** Map of function names to their StackVM code */
 export type StackVmFunctionsMap = Record<string, StackVmCode>;
-
-/** Defines a native function that runs in the host outside of StackVM */
-export type NativeFunction = (stack: StackVmStack) => number;
-
-/** Map of function names to native functions */
-export type NativeFunctionsMap = Record<string, NativeFunction>;
 
 export type FunctionsMap = Record<string, NativeFunction | StackVmCode>;
 
@@ -102,7 +94,7 @@ export class StackVM {
         // Push a new variables context
         this.varStack.push({});
 
-        let tmp: number;    
+        let tmp: number | string;    
         for (let pc = 0; pc < code.length; pc++) {
             const opcode = code[pc];
             // Noop does nothing
@@ -111,8 +103,11 @@ export class StackVM {
             if (opcode === OpCode.end) break;
 
             switch (opcode) {
-                case OpCode.push: this.stack.push(this.getValue(code[++pc])); break;
-                case OpCode.pop: this.pop(); break;
+                case OpCode.push:
+                case OpCode.pushs: this.stack.push(code[++pc]);
+                    break;
+                case OpCode.pop: this.pop();
+                    break;
                 case OpCode.get:
                     tmp = this.getVariable(code[++pc] as string);
                     this.stack.push(tmp);
@@ -208,7 +203,7 @@ export class StackVM {
         return this.pop();
     }
 
-    private callFunction(fnName: string): number {
+    private callFunction(fnName: string): number | string {
         if (typeof fnName !== "string") throw new StackVmError("Invalid function call");
 
         const fn = this.functions[fnName];
@@ -222,7 +217,7 @@ export class StackVM {
         if (typeof value === "string") {
             value = this.getVariable(value);
         }
-        return topOfStack < value ? -1 : topOfStack > value ? 1 : 0;
+        return topOfStack < <number>value ? -1 : topOfStack > <number>value ? 1 : 0;
     }
 
     private setVariable(name: string, value?: number) {
@@ -232,11 +227,11 @@ export class StackVM {
         this.varStack[this.varStack.length - 1][name] = v;
     }
 
-    private getVariable(name: string): number {
+    private getVariable(name: string): number | string {
         if (typeof name !== "string") throw new StackVmError("Undefined variable name");
 
         // Walk up the stack frames to find the variable
-        let val: number;
+        let val: number | string;
         for (let i = this.varStack.length - 1; i >= 0 && val == null; i--) {
             val = this.varStack[i][name];
         }
@@ -250,7 +245,7 @@ export class StackVM {
      * @throws If the stack is empty
      */
     private pop(): number {
-        const v = this.stack.pop();
+        const v = this.stack.pop() as number;
         if (v == null) throw new StackVmError("Stack empty");
         return v;
     }
@@ -265,13 +260,5 @@ export class StackVM {
         const v = this.stack[this.stack.length - 1 - offset];
         if (v == null) throw new StackVmError("Stack empty");
         return v;
-    }
-
-    private getValue(value: string | number): number {
-        // Must be a number
-        if (typeof value !== "number") {
-            throw new StackVmError("Value must be a number: " + value);
-        }
-        return value;
     }
 }
