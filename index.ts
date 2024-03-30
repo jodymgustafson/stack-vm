@@ -31,7 +31,7 @@ const vars: VariablesMap = {
 
 const vm = new StackVM(fns, vars);
 const code = assembler.assemble(`
-    get arg1
+s:  get arg1  # start
 test1:
     get arg0
     pushs f2c

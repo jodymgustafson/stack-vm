@@ -7,9 +7,14 @@ type AsmInstruction = {
     label?: string;
 };
 
+type AssemblerError = {
+    message: string;
+    line: number;
+};
+
 export class StackVmAssemblerError extends Error {
-    constructor(msg: string, readonly line: number) {
-        super(`Error (line ${line + 1}): ${msg}`);
+    constructor(readonly errors: AssemblerError[]) {
+        super(`There were ${errors.length} assembler errors`);
     }
 }
 
@@ -23,28 +28,33 @@ export class StackVmAssembler {
     private labels: Record<string, number>;
     // Array of parsed instructions
     private instructions: AsmInstruction[];
+    private errors: AssemblerError[];
 
     /**
      * Assembles a StackVM program into code that can be executed by the VM.
-     * @param code A program string or array of lines of code
+     * @param program A program string or array of lines of code
      */
-    assemble(code: string | string[]): StackVmCode {
+    assemble(program: string | string[]): StackVmCode {
         this.pc = 0;
         this.labels = {};
         this.instructions = [];
+        this.errors = [];
 
-        if (typeof code === "string") {
-            code = code.split("\n");
+        if (typeof program === "string") {
+            program = program.split("\n");
         }
 
-        for (let i = 0; i < code.length; i++) {
-            const line = code[i].trim();
+        for (let i = 0; i < program.length; i++) {
+            const line = program[i].trim();
             if (line) {
                 this.parseLine(line, i);
             }
         }
 
-        return this.getStackVmCode();
+        const code = this.getStackVmCode();
+        if (this.errors.length === 0) return code;
+
+        throw new StackVmAssemblerError(this.errors);
     }
 
     /**
@@ -70,7 +80,7 @@ export class StackVmAssembler {
 
     private getLabelAddress(instr: AsmInstruction): number {
         const addr = this.labels[instr.label];
-        if (addr == null) throw new StackVmAssemblerError(`Reference to unknown label '${instr.label}'`, instr.line);
+        if (addr == null) this.addError(`Reference to unknown label "${instr.label}"`, instr.line);
         return addr;
     }
 
@@ -81,59 +91,44 @@ export class StackVmAssembler {
      * @param lineNo Line number in the source file
      */
     private parseLine(line: string, lineNo: number): void {
-        const parts = line.split(" ");
-        const token = parts[0];
-        if (parts.length > 0 && !token.startsWith("#")) {
-            if (this.isLabel(token)) {
-                // Add a new label with addr set to the current position
-                this.labels[token.slice(0, -1)] = this.pc;
+        const re = /\s*([_A-Za-z]\w+:)?\s*([A-Za-z]+)?\s*(\".*\"|[.]|[^#\s]+)?\s*(#.*)?/.exec(line);
+        // re[1] = label
+        // re[2] = opcode
+        // re[3] = value
+        // re[4] = comment
+        if (re[1]) {
+            const label = re[1].slice(0, -1);
+            // Add a new label with addr set to the current position
+            if (this.labels[label] !== undefined) {
+                this.addError(`Duplicate label "${label}"`, lineNo);
             }
             else {
-                const instr: AsmInstruction = {
-                    opcode: this.getOpCode(token, lineNo),
-                    line: lineNo
-                };
-                this.pc++;
-
-                const lblOrValue = this.parseLabelOrValue(parts)
-                if (this.isBranchOp(instr.opcode)) {
-                    instr.label = lblOrValue;
-                    this.pc++;
-                }
-                else {
-                    instr.value = this.getValue(instr.opcode, lblOrValue);
-                    if (instr.value != undefined) this.pc++;
-                }
-
-                this.instructions.push(instr);
+                this.labels[label] = this.pc;
             }
+        }
+        if (re[2]) {
+            const instr: AsmInstruction = {
+                opcode: this.getOpCode(re[2], lineNo),
+                line: lineNo
+            };
+            this.pc++;
+
+            if (this.isBranchOp(instr.opcode)) {
+                instr.label = re[3];
+                this.pc++;
+            }
+            else {
+                instr.value = this.getValue(instr.opcode, re[3]);
+                if (instr.value != undefined) this.pc++;
+            }
+
+            this.instructions.push(instr);            
         }
     }
     
-    private parseLabelOrValue(parts: string[]): string {
-        let s = parts[1];
-        if (s && s.charAt(0) === '"') {
-            // Parse a quoted string
-            // Remove the start quote
-            let pieces = [s.slice(1)];
-            for (let i = 1; i < parts.length; i++) {
-                if (s.charAt(s.length - 1) === '"') break;
-                s = parts[i + 1];
-            }
-            // Remove the end quote
-            return pieces.join(" ").slice(0, -1);
-        }
-
-        return s;
-    }
-
-    private isLabel(token: string) {
-        return token.endsWith(":");
-    }
-
     private getOpCode(s: string, line: number): OpCode {
         const oc = OpCode[s.toLowerCase()];
-        if (oc === undefined) throw new StackVmAssemblerError(`Invalid opcode '${s}'`, line);
+        if (oc === undefined) this.addError(`Invalid opcode "${s}"`, line);
         return oc;
     }
 
@@ -165,12 +160,24 @@ export class StackVmAssembler {
             case OpCode.get:
             case OpCode.put:
             case OpCode.call:
-                return value;
+                return unquote(value);
             // All other ops expect a number
             default:
-                if (value.charAt(0) === "$") return parseInt(value.slice(1), 16);
-                if (value.charAt(0) === "%") return parseInt(value.slice(1), 2);
+                if (value[0] === "$") return parseInt(value.slice(1), 16);
+                if (value[0] === "%") return parseInt(value.slice(1), 2);
                 return parseFloat(value);
         }
     }
+
+    private addError(message: string, line: number): void {
+        this.errors.push({
+            message,
+            line
+        });
+    }
+}
+
+/** Removes any quotes around a string */
+function unquote(s: string): string {
+    return s[0] === '"' ? s.slice(1, -1) : s;
 }

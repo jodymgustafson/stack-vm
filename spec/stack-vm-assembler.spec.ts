@@ -1,4 +1,4 @@
-import { StackVmAssembler } from "../src/stack-vm-assembler"
+import { StackVmAssembler, StackVmAssemblerError } from "../src/stack-vm-assembler"
 import { OpCode } from "../src/stack-vm";
 
 describe("When assemble code", () => {
@@ -53,15 +53,13 @@ describe("When assemble code", () => {
     describe("and has quoted strings", () => {
         it("should parse strings", () => {
             const prog = assembler.assemble([
-                `  pushs "this-string"  # push 2
-                   push 3  # push 3
-                   add     # add them
+                `start:  pushs "this string"  # push string
                 `
             ]);
             expect(assembler["instructions"]).toEqual([
-                { opcode: OpCode.pushs, value: "this-string", line: 0 },
+                { opcode: OpCode.pushs, value: "this string", line: 0 },
             ]);
-            expect(prog).toEqual([OpCode.pushs, "this-string"]);
+            expect(prog).toEqual([OpCode.pushs, "this string"]);
         });    
     });
 
@@ -127,23 +125,83 @@ describe("When assemble code", () => {
     });
 
     describe("and has an opcode error", () => {
+        let err: StackVmAssemblerError;
+        beforeAll(() => {
+            try {
+                assembler.assemble([
+                    "Test program",
+                ]);
+            }
+            catch (e) {
+                err = e;
+            }    
+        });
+
         it("should throw an error", () => {
-            expect(() => assembler.assemble([
-                "Test program",
-            ]))
-            .toThrowError("Error (line 1): Invalid opcode 'Test'");
+            expect(err).toBeDefined();
+            expect(err.message).toBe("There were 1 assembler errors");
+        });
+        it("should have error messages", () => {
+            expect(err.errors).toEqual([
+                { message: 'Invalid opcode "Test"', line: 0 }
+            ]);
         });
     });
 
-    describe("and has an label error", () => {
+    describe("and has a label error", () => {
+        let err: StackVmAssemblerError;
+        beforeAll(() => {
+            try {
+                assembler.assemble(
+                    `start:
+                      bra foo
+                     bar:
+                       end`
+                );
+            }
+            catch (e) {
+                err = e;
+            }    
+        });
         it("should throw an error", () => {
-            expect(() => assembler.assemble(
-                `start:
-                  bra foo
-                 bar:
-                   end`
-            ))
-            .toThrowError("Error (line 2): Reference to unknown label 'foo'");
+            expect(err).toBeDefined();
+            expect(err.message).toBe("There were 1 assembler errors");
+        });
+        it("should have error messages", () => {
+            expect(err.errors).toEqual([
+                { message: 'Reference to unknown label "foo"', line: 1 }
+            ]);
+        });
+    });
+
+    describe("and has duplicate labels", () => {
+        let err: StackVmAssemblerError;
+        beforeAll(() => {
+            try {
+                assembler.assemble(
+                    `start:
+                        bra start
+                    end:
+                        bra end
+                    start:
+                        push 45.6
+                    end:
+                       end`
+                );
+            }
+            catch (e) {
+                err = e;
+            }    
+        });
+        it("should throw an error", () => {
+            expect(err).toBeDefined();
+            expect(err.message).toBe("There were 2 assembler errors");
+        });
+        it("should have error messages", () => {
+            expect(err.errors).toEqual([
+                { message: 'Duplicate label "start"', line: 4 },
+                { message: 'Duplicate label "end"', line: 6 }
+            ]);
         });
     });
 });

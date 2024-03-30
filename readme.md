@@ -87,3 +87,10 @@ With opcodes:
 ]
 ```
 
+## Grammar:
+
+expression     → label ;
+label          → STRING: opcode ;
+opcode         → OPCODE value ;
+value          → STRING | NUMBER comment ;
+comment        → # STRING
