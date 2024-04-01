@@ -1,6 +1,6 @@
 {
   "name": "stack-vm",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Virtual machine that uses a stack for optimized computation of mathematical expressions.",
   "main": "index.js",
   "scripts": {

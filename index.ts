@@ -1,28 +1,46 @@
 /*
 Runs a StackVM program
 Format:
-    node index.js "path/to/file.yml"
+    node index.js "path/to/file.yml" [-si]
+
+Flags:
+    Use -s to log stack debugging
+    Use -i to log instructions debugging
+    Use -si to log both
 */ 
 
 import { argv } from "process";
-import { StackVM } from "./src/stack-vm";
-import { StackVmAssembler } from "./src/stack-vm-assembler";
-import { StackVmLoader } from "./src/stack-vm-loader"
+import { StackVmSystemConsoleLib } from "./src/internal/stack-vm-console";
 import { StackVmSystemMathLib } from "./src/internal/stack-vm-math";
 import { StackVmSystemStringLib } from "./src/internal/stack-vm-string";
-import { StackVmSystemConsoleLib } from "./src/internal/stack-vm-console";
-import { instructionLogger } from "./src/internal/instruction-logger";
+import { StackVM, StackVmError } from "./src/stack-vm";
+import { StackVmLoader } from "./src/stack-vm-loader";
 import { StackVmConfig } from "./src/stackvm-types";
+import { instructionLogger } from "./src/internal/instruction-logger";
 
-const loadedFns = new StackVmLoader().loadSync(argv[2]);
+const userFns = new StackVmLoader().loadSync(argv[2]);
 
 const config: StackVmConfig = {
-    functions: { ...loadedFns, ...StackVmSystemMathLib, ...StackVmSystemStringLib, ...StackVmSystemConsoleLib },
-    // stackLogger: (...s) => console.log(...s),
-    // instructionLogger: instructionLogger,
+    functions: { ...userFns, ...StackVmSystemMathLib, ...StackVmSystemStringLib, ...StackVmSystemConsoleLib },
 };
 
-const vm = new StackVM(config);
-const result = vm.run();
+const flags = argv[3];
+if (flags) {
+    if (flags.indexOf("s") > 0) {
+        config.stackLogger = (...s) => console.log(...s);
+    }
+    if (flags.indexOf("i") > 0) {
+        config.instructionLogger = instructionLogger;
+    }
+}
 
-console.log(result);
+const vm = new StackVM(config);
+try {
+    const result = vm.run();
+    console.log(result);
+}
+catch (err) {
+    if (err instanceof StackVmError) {
+        console.error("VM ERROR:", err.message);
+    }
+}

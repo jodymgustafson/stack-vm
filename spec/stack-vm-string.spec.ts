@@ -31,4 +31,47 @@ describe("When test calling string functions", () => {
         ]))
         .toBe(0);
     });
+
+    it("should call str.concat(abc, def)", () => {
+        expect(vm.run([
+            OpCode.pushs, "abc",
+            OpCode.pushs, "def",
+            OpCode.call, "str.concat",
+        ]))
+        .toBe("abcdef");
+    });
+
+    it("should call str.sub(abcdef, 1, 4)", () => {
+        expect(vm.run([
+            OpCode.pushs, "abcdef",
+            OpCode.push, 1,
+            OpCode.push, 4,
+            OpCode.call, "str.sub",
+        ]))
+        .toEqual("bcd");
+    });
+
+    it("should call str.length(abcdef)", () => {
+        expect(vm.run([
+            OpCode.pushs, "abcdef",
+            OpCode.call, "str.length",
+        ]))
+        .toEqual(6);
+    });
+
+    it("should call str.parseNumber(123.45)", () => {
+        expect(vm.run([
+            OpCode.pushs, "123.45",
+            OpCode.call, "str.parseNumber",
+        ]))
+        .toEqual(123.45);
+    });
+
+    it("should call str.toString(123.45)", () => {
+        expect(vm.run([
+            OpCode.push, 123.45,
+            OpCode.call, "str.toString",
+        ]))
+        .toEqual("123.45");
+    });
 });

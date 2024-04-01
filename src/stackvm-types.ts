@@ -60,3 +60,29 @@ export type StackVmConfig = {
     /** A function to log instruction debugging info */
     instructionLogger?: LoggerFn;
 };
+
+/** A function definition in a StackVM file */
+export type StackVmFunction = {
+    /** Name of the function */
+    name: string;
+    /** Description of the function */
+    description: string;
+    /** Assembly code of the function */
+    definition: string;
+};
+
+/** The format of a StackVM file */
+export type StackVmFile = {
+    stackvm: {
+        /** StackVM version the file was created for */
+        version: string;
+        /** Name of the package */
+        name: string;
+        /** Description of the package */
+        description?: string;
+        /** Array of any files to import */
+        import?: string[];
+        /** Array of function definitions */
+        functions: StackVmFunction[];
+    }
+};

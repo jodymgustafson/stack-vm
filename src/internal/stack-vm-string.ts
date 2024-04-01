@@ -7,7 +7,7 @@ import { SystemFunctionsMap } from "./types";
  * str.compare: Compare two strings and return -1, 0 or 1
  *   stack: [s1:string, s2:string]
  * 
- * str.append(startStr:string, endStr:string): Appends two strings
+ * str.concat(startStr:string, endStr:string): Concatenates two strings
  *   pushs "abc"
  *   pushs "def"
  *   call str.append
@@ -20,8 +20,14 @@ import { SystemFunctionsMap } from "./types";
  *   call str.sub
  *   // returns "bcd"
  * 
- * str.length: Returns the length of a string
- *   stack: [s:string]
+ * str.length(s:string): Returns the length of a string
+ *   pushs "abcdef"
+ *   call str.length
+ *   // returns 6
+ * 
+ * str.parseNumber(s:string): Parses a string to a number
+ * 
+ * str.toString(n:number): Converts a number to a string
  */
 export const StackVmSystemStringLib: SystemFunctionsMap = {
     "str.compare": s => {
@@ -31,7 +37,7 @@ export const StackVmSystemStringLib: SystemFunctionsMap = {
             throw new StackVmError("Parameters to str.compare must be of type string");
         return a < b ? -1 : a > b ? 1 : 0;
     },
-    "str.append": s => {
+    "str.concat": s => {
         const a = s.pop() as string;
         return s.pop() + a;
     },
@@ -41,5 +47,7 @@ export const StackVmSystemStringLib: SystemFunctionsMap = {
         const str = s.pop() as string;
         return str.slice(start, end);
     },
-    "str.length": s => (s.pop() as string).length
+    "str.length": s => (s.pop() as string).length,
+    "str.parseNumber": s => parseFloat(s.pop() as string),
+    "str.toString": s => s.pop().toString(),
 };

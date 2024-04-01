@@ -1,82 +1,65 @@
 stackvm:
   version: "0.0.0"
+  name: Temp_Convert
+  description: Program to convert temperature between celsius and fahrenheit
   import:
   - ./metric-convert.yml
-  package:
-    name: Temp_Convert
-    description: Program to convert temperature between celsius and fahrenheit
-    version: "0.0.0"
-    functions:
-    # - name: f2c
-    #   description: |
-    #     Convert fahrenheit to celsius.
-    #     Accepts 1 parameter on the top of the stack
-    #     c = (f - 32) * 5 / 9
-    #   definition: |
-    #     push 32
-    #     sub
-    #     push 5
-    #     mul
-    #     push 9
-    #     div
-    # - name: c2f
-    #   description: |
-    #     Convert celsius to fahrenheit.
-    #     Accepts 1 parameter on the top of the stack
-    #     f = (c * 9) / 5 + 32
-    #   definition: |
-    #     push 9
-    #     mul
-    #     push 5
-    #     div
-    #     push 32
-    #     add
-    - name: main
-      description: Entry function
-      definition: |
-        start:
-          pushs "c2f or f2c or (q)uit?"
-          call writeln
-          pop               # discard result
-          call readln
-          put mode
-        test_quit:
-          pushs "q"
-          call str.compare
-          cmpc 0
-          pop                 # get rid of compare result
-          beq end
-          bra get_temp
-        error:
-          err "Invalid command"
-        get_temp:
-          pushs "Enter temperature:"
-          call writeln
-          pop               # discard result
-          call readln
-          put temperature
-        test_f2c:
-          get mode
-          pushs "f2c"
-          call str.compare
-          cmpc 0
-          pop                 # get rid of compare result
-          bne test_c2f
-          call f2c
-          call writeln        # Show result
-          pop
-          bra start
-        test_c2f:
-          get mode
-          pushs "c2f"
-          call str.compare
-          cmpc 0
-          pop                 # get rid of compare result
-          bne test_quit
-          call c2f
-          call writeln        # Show result
-          pop
-          bra start
-        end:
-          pushs "bye"
-          end
+  functions:
+  - name: main
+    description: Entry function
+    definition: |
+      start:
+        pushs "c2f or f2c or (q)uit?"
+        call writeln
+        pop               # discard result
+        call readln
+        put mode
+      test_quit:
+        pushs "q"
+        call str.compare
+        cmpc 0
+        pop                 # get rid of compare result
+        beq end
+      test_c2f:
+        get mode
+        pushs "c2f"
+        call str.compare
+        cmpc 0
+        pop                 # get rid of compare result
+        beq convert_c2f
+      test_f2c:
+        get mode
+        pushs "f2c"
+        call str.compare
+        cmpc 0
+        pop                 # get rid of compare result
+        beq convert_f2c
+      error:
+        pushs "Invalid command: "
+        get mode
+        call str.concat
+        call writeln
+        bra start
+      convert_f2c:
+        call getTemperature
+        call f2c
+        call writeln        # Show result
+        pop
+        bra start
+      convert_c2f:
+        call getTemperature
+        call c2f
+        call writeln        # Show result
+        pop
+        bra start
+      end:
+        pushs "bye"
+        end
+  - name: getTemperature
+    description: Waits for the user to enter a temperature
+    definition: |
+      pushs "Enter temperature:"
+      call writeln
+      pop               # discard result
+      call readln
+      call str.parseNumber
