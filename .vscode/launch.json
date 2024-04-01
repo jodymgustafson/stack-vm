@@ -12,7 +12,7 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}\\index.ts",
-            "args": ["c2f", "10"],
+            "args": ["./examples/temp-convert.yml"],
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
             ]

@@ -13,7 +13,7 @@ describe("When test logic ops", () => {
             OpCode.push, 1,
         ]
     };
-    const vm = new StackVM(functions, { x: 5 });
+    const vm = new StackVM({ functions, variables: { x: 5 } });
 
     it("should compare two values on stack greater than", () => {
         expect(vm.run([

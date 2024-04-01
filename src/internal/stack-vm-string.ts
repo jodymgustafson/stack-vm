@@ -23,7 +23,7 @@ import { SystemFunctionsMap } from "./types";
  * str.length: Returns the length of a string
  *   stack: [s:string]
  */
-export const StackVmNativeStringLib: SystemFunctionsMap = {
+export const StackVmSystemStringLib: SystemFunctionsMap = {
     "str.compare": s => {
         const b = s.pop();
         const a = s.pop();

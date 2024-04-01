@@ -2,7 +2,7 @@ import { StackVM, OpCode } from "../src/stack-vm"
 import { StackVmSystemMathLib } from "../src/internal/stack-vm-math";
 
 describe("When test calling math functions", () => {
-    const vm = new StackVM(StackVmSystemMathLib, { x: 5 });
+    const vm = new StackVM({ functions: StackVmSystemMathLib, variables: { x: 5 } });
 
     it("should call abs(-11)", () => {
         expect(vm.run([

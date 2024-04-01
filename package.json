@@ -15,6 +15,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "prompt-sync": "^4.2.0",
     "yaml": "^2.4.1"
   }
 }

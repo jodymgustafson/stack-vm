@@ -16,7 +16,6 @@ export enum OpCode {
     sub,
     mul,
     div,
-    pow,
     cmp,
     cmpc,
     cmpv,
@@ -45,7 +44,22 @@ export type VariablesMap = Record<string, number | string>;
 /** Map of function names to their StackVM code */
 export type StackVmFunctionsMap = Record<string, StackVmCode>;
 
+/** Map of all system and user functions */
 export type FunctionsMap = Record<string, SystemFunction | StackVmCode>;
+
+export type LoggerFn = (...s) => void;
+
+/** The config for creating a new VM */
+export type StackVmConfig = {
+    /** Map of functions */
+    functions?: FunctionsMap;
+    /** Global variables */
+    variables?: VariablesMap;
+    /** A function to log stack debugging info */
+    stackLogger?: LoggerFn;
+    /** A function to log instruction debugging info */
+    instructionLogger?: LoggerFn;
+};
 
 /** An error thrown by the VM */
 export class StackVmError extends Error {
@@ -64,14 +78,20 @@ export class StackVM {
     // Result of the last compare
     private compareResult = 0;
 
+    private functions: FunctionsMap;
+    private stackLogger: LoggerFn;
+    private instructionLogger: LoggerFn;
+
     /**
-     * @param functions Global functions map
-     * @param globalVars Global variables
+     * @param config Configuration for the VM
      */
-    constructor(readonly functions: FunctionsMap, globalVars?: VariablesMap) {
-        if (globalVars) {
-            this.varStack.push(globalVars);
+    constructor(readonly config: StackVmConfig) {
+        this.functions = config.functions;
+        if (config.variables) {
+            this.varStack.push(config.variables);
         }
+        this.stackLogger = config.stackLogger;
+        this.instructionLogger = config.instructionLogger;
     }
 
     /**
@@ -79,10 +99,10 @@ export class StackVM {
      * @param code Code to run
      * @returns The value on top of the stack when the code finishes
      */
-    run(code: StackVmCode): number {
+    run(code?: StackVmCode): number {
         // Always start with an empty stack
         this.stack = [];
-        return this.runFrame(code);
+        return this.runFrame(code ?? this.functions["main"] as StackVmCode);
     }
     
     /**
@@ -96,7 +116,9 @@ export class StackVM {
 
         let tmp: number | string;    
         for (let pc = 0; pc < code.length; pc++) {
+            this.stackLogger && this.stackLogger(this.stack);
             const opcode = code[pc];
+            this.instructionLogger && this.instructionLogger(opcode, code[pc + 1]);
             // Noop does nothing
             if (opcode === OpCode.nop) continue;
             // End immediately breaks out of the loop
@@ -213,6 +235,11 @@ export class StackVM {
         else return this.runFrame(fn);
     }
 
+    /**
+     * Compares two number and returns -1 if first less than second, 1 if greater, 0 if equal.
+     * @param topOfStack Number on top of the stack
+     * @param value Value to compare. If a string it will assume it's a variable and use its value.
+     */
     private compare(topOfStack: number, value: string | number): number {
         if (typeof value === "string") {
             value = this.getVariable(value);

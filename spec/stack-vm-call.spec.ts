@@ -25,7 +25,7 @@ describe("When test calling functions", () => {
             OpCode.push, 1,  // n == 0 => 1
         ],
     };
-    const vm = new StackVM(functions, { x: 5 });
+    const vm = new StackVM({ functions, variables: { x: 5 } });
 
     it("should compute factorial: -1", () => {
         expect(() => vm.run([
