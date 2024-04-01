@@ -1,4 +1,5 @@
-import { StackVM, OpCode } from "../src/stack-vm";
+import { StackVM } from "../src/stack-vm";
+import { OpCode } from "../src/stackvm-types";
 import { StackVmSystemStringLib } from "../src/internal/stack-vm-string";
 
 describe("When test calling string functions", () => {

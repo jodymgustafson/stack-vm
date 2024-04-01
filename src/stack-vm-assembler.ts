@@ -1,4 +1,4 @@
-import { OpCode, StackVmCode } from "./stack-vm";
+import { OpCode, StackVmCode } from "./stackvm-types";
 
 type AsmInstruction = {
     opcode: OpCode;

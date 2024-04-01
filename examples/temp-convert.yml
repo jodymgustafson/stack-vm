@@ -1,7 +1,7 @@
 stackvm:
   version: "0.0.0"
-  depends:
-  - ./convert.yml
+  import:
+  - ./metric-convert.yml
   package:
     name: Temp_Convert
     description: Program to convert temperature between celsius and fahrenheit
@@ -35,7 +35,7 @@ stackvm:
       description: Entry function
       definition: |
         start:
-          pushs "c2f or f2c or (q)uit)?"
+          pushs "c2f or f2c or (q)uit?"
           call writeln
           pop               # discard result
           call readln

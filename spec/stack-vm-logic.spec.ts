@@ -1,4 +1,5 @@
-import { StackVM, OpCode, FunctionsMap } from "../src/stack-vm"
+import { StackVM } from "../src/stack-vm"
+import { FunctionsMap, OpCode } from "../src/stackvm-types";
 
 describe("When test logic ops", () => {
     const functions: FunctionsMap = {

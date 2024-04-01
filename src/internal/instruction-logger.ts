@@ -1,4 +1,4 @@
-import { OpCode } from "../stack-vm";
+import { OpCode } from "../stackvm-types";
 
 /**
  * A function for logging VM instructions

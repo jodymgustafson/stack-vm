@@ -1,4 +1,5 @@
-import { StackVM, OpCode } from "../src/stack-vm"
+import { StackVM } from "../src/stack-vm"
+import { OpCode } from "../src/stackvm-types";
 import { StackVmSystemMathLib } from "../src/internal/stack-vm-math";
 
 describe("When test calling math functions", () => {

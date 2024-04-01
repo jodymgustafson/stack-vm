@@ -5,17 +5,18 @@ Format:
 */ 
 
 import { argv } from "process";
-import { StackVM, StackVmConfig } from "./src/stack-vm";
+import { StackVM } from "./src/stack-vm";
 import { StackVmAssembler } from "./src/stack-vm-assembler";
 import { StackVmLoader } from "./src/stack-vm-loader"
 import { StackVmSystemMathLib } from "./src/internal/stack-vm-math";
 import { StackVmSystemStringLib } from "./src/internal/stack-vm-string";
 import { StackVmSystemConsoleLib } from "./src/internal/stack-vm-console";
 import { instructionLogger } from "./src/internal/instruction-logger";
+import { StackVmConfig } from "./src/stackvm-types";
 
 const config: StackVmConfig = {
     functions: { ...StackVmSystemMathLib, ...StackVmSystemStringLib, ...StackVmSystemConsoleLib },
-    stackLogger: (...s) => console.log(...s),
+    // stackLogger: (...s) => console.log(...s),
     // instructionLogger: instructionLogger,
 };
 

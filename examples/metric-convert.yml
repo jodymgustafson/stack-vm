@@ -1,0 +1,57 @@
+stackvm:
+  version: "0.0.0"
+  depends:
+  - ./convert.yml
+  package:
+    name: Metric Conversion Functions
+    description: Functions to convert values to and from metric
+    version: "0.0.0"
+    functions:
+    - name: f2c
+      description: |
+        Convert fahrenheit to celsius.
+        Accepts 1 parameter on the top of the stack
+        c = (f - 32) * 5 / 9
+      definition: |
+        push 32
+        sub
+        push 5
+        mul
+        push 9
+        div
+        end
+    - name: c2f
+      description: |
+        Convert celsius to fahrenheit.
+        Accepts 1 parameter on the top of the stack
+        f = (c * 9) / 5 + 32
+      definition: |
+        push 9
+        mul
+        push 5
+        div
+        push 32
+        add
+        end
+    - name: km2m
+      description: |
+        Convert kilometers to miles.
+        Accepts 1 parameter on the top of the stack
+        m = 8 / 5 * k
+      definition: |
+        push 8
+        push 5
+        div
+        mul
+        end
+    - name: m2km
+      description: |
+        Convert miles to kilometers.
+        Accepts 1 parameter on the top of the stack
+        k = 5 / 8 * m
+      definition: |
+        push 5
+        push 8
+        div
+        mul
+        end

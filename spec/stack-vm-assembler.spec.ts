@@ -1,5 +1,5 @@
 import { StackVmAssembler, StackVmAssemblerError } from "../src/stack-vm-assembler"
-import { OpCode } from "../src/stack-vm";
+import { OpCode } from "../src/stackvm-types";
 
 describe("When assemble code", () => {
     const assembler = new StackVmAssembler();
