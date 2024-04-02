@@ -150,7 +150,6 @@ export class StackVmAssembler {
 
         switch (opcode) {
             // All of these ops expect a string
-            case OpCode.pushs:
             case OpCode.beq:
             case OpCode.bgt:
             case OpCode.blt:
@@ -161,6 +160,10 @@ export class StackVmAssembler {
             case OpCode.put:
             case OpCode.call:
                 return unquote(value);
+            case OpCode.push:
+                if (isQuotedString(value)) {
+                    return unquote(value);
+                }
             // All other ops expect a number
             default:
                 if (value[0] === "$") return parseInt(value.slice(1), 16);
@@ -179,5 +182,9 @@ export class StackVmAssembler {
 
 /** Removes any quotes around a string */
 function unquote(s: string): string {
-    return s[0] === '"' ? s.slice(1, -1) : s;
+    return isQuotedString(s) ? s.slice(1, -1) : s;
+}
+
+function isQuotedString(s: string) {
+    return s[0] === '"' && s[s.length - 1] === '"';
 }

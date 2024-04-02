@@ -7,8 +7,8 @@ describe("When test calling string functions", () => {
 
     it("should call str.compare(a, b)", () => {
         expect(vm.run([
-            OpCode.pushs, "a",
-            OpCode.pushs, "b",
+            OpCode.push, "a",
+            OpCode.push, "b",
             OpCode.call, "str.compare",
         ]))
         .toBe(-1);
@@ -16,8 +16,8 @@ describe("When test calling string functions", () => {
 
     it("should call str.compare(b, a)", () => {
         expect(vm.run([
-            OpCode.pushs, "b",
-            OpCode.pushs, "a",
+            OpCode.push, "b",
+            OpCode.push, "a",
             OpCode.call, "str.compare",
         ]))
         .toBe(1);
@@ -25,8 +25,8 @@ describe("When test calling string functions", () => {
 
     it("should call str.compare(a, a)", () => {
         expect(vm.run([
-            OpCode.pushs, "a",
-            OpCode.pushs, "a",
+            OpCode.push, "a",
+            OpCode.push, "a",
             OpCode.call, "str.compare",
         ]))
         .toBe(0);
@@ -34,8 +34,8 @@ describe("When test calling string functions", () => {
 
     it("should call str.concat(abc, def)", () => {
         expect(vm.run([
-            OpCode.pushs, "abc",
-            OpCode.pushs, "def",
+            OpCode.push, "abc",
+            OpCode.push, "def",
             OpCode.call, "str.concat",
         ]))
         .toBe("abcdef");
@@ -43,7 +43,7 @@ describe("When test calling string functions", () => {
 
     it("should call str.sub(abcdef, 1, 4)", () => {
         expect(vm.run([
-            OpCode.pushs, "abcdef",
+            OpCode.push, "abcdef",
             OpCode.push, 1,
             OpCode.push, 4,
             OpCode.call, "str.sub",
@@ -53,7 +53,7 @@ describe("When test calling string functions", () => {
 
     it("should call str.length(abcdef)", () => {
         expect(vm.run([
-            OpCode.pushs, "abcdef",
+            OpCode.push, "abcdef",
             OpCode.call, "str.length",
         ]))
         .toEqual(6);
@@ -61,7 +61,7 @@ describe("When test calling string functions", () => {
 
     it("should call str.parseNumber(123.45)", () => {
         expect(vm.run([
-            OpCode.pushs, "123.45",
+            OpCode.push, "123.45",
             OpCode.call, "str.parseNumber",
         ]))
         .toEqual(123.45);

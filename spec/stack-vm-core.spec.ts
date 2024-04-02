@@ -152,12 +152,20 @@ describe("When test core ops", () => {
       .toBe(2);
   });
 
-  it("should set a variable to a constant", () => {
+  it("should set a variable to a constant number", () => {
     expect(vm.run([
       OpCode.putc, "x", 3,
       OpCode.get, "x",
     ]))
       .toBe(3);
+  });
+
+  it("should set a variable to a constant string", () => {
+    expect(vm.run([
+      OpCode.putc, "x", "test",
+      OpCode.get, "x",
+    ]))
+      .toBe("test");
   });
 
   it("should error when unknown variable", () => {

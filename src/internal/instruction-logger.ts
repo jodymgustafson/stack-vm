@@ -8,7 +8,7 @@ import { OpCode } from "../stackvm-types";
 export function instructionLogger(opcode: OpCode, value?: number | string): void {
     let out = "* " + OpCode[opcode];
     if (hasArgument(opcode)) {
-        if (opcode === OpCode.pushs) {
+        if (opcode === OpCode.push && typeof value === "string") {
             value = `"${value}"`;
         }
         out += " " + value;

@@ -4,7 +4,6 @@ import { SystemFunction } from "./internal/types";
 export enum OpCode {
     nop = 0,
     push,
-    pushs,
     pop,
     get,
     put,

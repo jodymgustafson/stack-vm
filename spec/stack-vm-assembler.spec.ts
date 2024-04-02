@@ -53,13 +53,13 @@ describe("When assemble code", () => {
     describe("and has quoted strings", () => {
         it("should parse strings", () => {
             const prog = assembler.assemble([
-                `start:  pushs "this string"  # push string
+                `start:  push "this string"  # push string
                 `
             ]);
             expect(assembler["instructions"]).toEqual([
-                { opcode: OpCode.pushs, value: "this string", line: 0 },
+                { opcode: OpCode.push, value: "this string", line: 0 },
             ]);
-            expect(prog).toEqual([OpCode.pushs, "this string"]);
+            expect(prog).toEqual([OpCode.push, "this string"]);
         });    
     });
 

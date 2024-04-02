@@ -9,33 +9,33 @@ stackvm:
     description: Entry function
     definition: |
       start:
-        pushs "c2f or f2c or (q)uit?"
+        push "c2f or f2c or (q)uit?"
         call writeln
         pop               # discard result
         call readln
         put mode
       test_quit:
-        pushs "q"
+        push "q"
         call str.compare
         cmpc 0
         pop                 # get rid of compare result
         beq end
       test_c2f:
         get mode
-        pushs "c2f"
+        push "c2f"
         call str.compare
         cmpc 0
         pop                 # get rid of compare result
         beq convert_c2f
       test_f2c:
         get mode
-        pushs "f2c"
+        push "f2c"
         call str.compare
         cmpc 0
         pop                 # get rid of compare result
         beq convert_f2c
       error:
-        pushs "Invalid command: "
+        push "Invalid command: "
         get mode
         call str.concat
         call writeln
@@ -53,12 +53,12 @@ stackvm:
         pop
         bra start
       end:
-        pushs "bye"
+        push "bye"
         end
   - name: getTemperature
     description: Waits for the user to enter a temperature
     definition: |
-      pushs "Enter temperature:"
+      push "Enter temperature:"
       call writeln
       pop               # discard result
       call readln

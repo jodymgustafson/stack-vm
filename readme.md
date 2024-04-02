@@ -5,31 +5,30 @@ StackVM is a virtual machine that uses a stack for optimized computation of math
 ## Operations
 
 ### Stack
-- push n: Push a numeric value on the stack
-- pushs s: Push a string value on the stack
+- push n: Push a value on the stack
 - pop: Pop the value off the top of the stack and discard
 - get x: Push a variable's value on top of the stack
-- put x: Set a variable's value to the number on top of the stack
-- putc x, n: Set a variable's value to the specified constant number
+- put x: Set a variable's value to the value on top of the stack
+- putc x, n: Set a variable's value to the specified constant value
 
 ### Math
-- add: Pop two values off the stack, add them, push the result (s0=s1+s0)
-- sub: Pop two values off the stack, subtract them, push the result (s0=s1-s0)
-- mul: Pop two values off the stack, multiply them, push the result (s0=s1*s0)
-- div: Pop two values off the stack, divide them, push the result (s0=s1/s0)
+- add: Pop two numbers off the stack, add them, push the result (s0=s1+s0)
+- sub: Pop two numbers off the stack, subtract them, push the result (s0=s1-s0)
+- mul: Pop two numbers off the stack, multiply them, push the result (s0=s1*s0)
+- div: Pop two numbers off the stack, divide them, push the result (s0=s1/s0)
 
 ### Bitwise
-- and: Pop two values off the stack, and them, push the result (s0=s1 & s0)
+- and: Pop two numbers off the stack, and them, push the result (s0=s1 & s0)
 - or: Pop two values off the stack, or them, push the result (s0=s1 | s0)
-- xor: Pop two values off the stack, xor them, push the result (s0=s1 ^ s0)
-- not: Pop a value off the stack, flips the bits, push the result (s0=~s0)
-- shlc n: Pop a value off the stack, shifts the bits the specified amount left, push the result (s0=s0 << n)
-- shrc n: Pop a value off the stack, shifts the bits the specified amount right, push the result (s0=s0 >> n)
+- xor: Pop two numbers off the stack, xor them, push the result (s0=s1 ^ s0)
+- not: Pop a number off the stack, flip the bits, push the result (s0=~s0)
+- shlc n: Pop a number off the stack, shift the bits the specified amount left, push the result (s0=s0 << n)
+- shrc n: Pop a number off the stack, shift the bits the specified amount right, push the result (s0=s0 >> n)
 
 ### Logic
-- cmp: Pop two values off the stack, compare them, push the result
-- cmpc n: Compares value on top of the stack to a constant number
-- cmpv x: Compares value on top of the stack to the value of a variable
+- cmp: Pop two numbers off the stack, compare them, push the result
+- cmpc n: Compares number on top of the stack to a constant number
+- cmpv x: Compares number on top of the stack to the value of a variable
 - bra x: Branches to a label
 - beq x: Branch to a label if a previous compare evaluated to equal
 - bne x: Branch to a label if a previous compare evaluated to not equal
@@ -39,7 +38,7 @@ StackVM is a virtual machine that uses a stack for optimized computation of math
 ### Misc
 - call x: Calls a subroutine
 - err x: Throws an error with a message
-- end: Ends a program or subroutine
+- end: Ends a function
 
 ## Format
 
@@ -53,7 +52,7 @@ Numbers can be entered in decimal, hexadecimal or binary.
 ### Strings
 Strings are defined using double quotes.
 
-    pushs "This is a string"
+    push "This is a string"
 
 ### Comments
 Anything on a line after a hash # is ignored.
@@ -84,8 +83,8 @@ There are built in system functions for basic mathematical and string functions.
     call sin # [1]
     end
 
-    pushs "abc"      # ["abc"]
-    pushs "def"      # ["abc", "def"]
+    push "abc"      # ["abc"]
+    push "def"      # ["abc", "def"]
     call str.append  # ["abcdef"]
 
 ## User Defined Functions

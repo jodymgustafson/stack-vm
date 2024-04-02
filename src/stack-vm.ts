@@ -1,4 +1,4 @@
-import { SystemFunction, StackVmStack } from "./internal/types";
+import { StackVmStack } from "./internal/types";
 import { FunctionsMap, LoggerFn, OpCode, StackVmCode, StackVmConfig, VariablesMap } from "./stackvm-types";
 
 /** An error thrown by the VM */
@@ -65,8 +65,7 @@ export class StackVM {
             if (opcode === OpCode.end) break;
 
             switch (opcode) {
-                case OpCode.push:
-                case OpCode.pushs: this.stack.push(code[++pc]);
+                case OpCode.push: this.stack.push(code[++pc]);
                     break;
                 case OpCode.pop: this.pop();
                     break;
@@ -78,7 +77,7 @@ export class StackVM {
                     this.setVariable(code[++pc] as string, this.peek());
                     break;
                 case OpCode.putc:
-                    this.setVariable(code[++pc] as string, code[++pc] as number);
+                    this.setVariable(code[++pc] as string, code[++pc]);
                     break;
                 case OpCode.call:
                     tmp = this.callFunction(code[++pc] as string);
@@ -187,7 +186,7 @@ export class StackVM {
         return topOfStack < <number>value ? -1 : topOfStack > <number>value ? 1 : 0;
     }
 
-    private setVariable(name: string, value?: number) {
+    private setVariable(name: string, value?: number | string) {
         if (typeof name !== "string") throw new StackVmError("Undefined variable name");
         // Set variable in the current stack frame
         const v = value ?? this.peek();
