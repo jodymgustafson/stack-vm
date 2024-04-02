@@ -1,9 +1,9 @@
-import { StackVM } from "../src/stack-vm";
-import { OpCode } from "../src/stackvm-types";
-import { StackVmSystemStringLib } from "../src/internal/stack-vm-string";
+import { StringSystemFunctions } from "../../src/internal/sys/string";
+import { StackVM } from "../../src/stackvm";
+import { OpCode } from "../../src/stackvm-types";
 
 describe("When test calling string functions", () => {
-    const vm = new StackVM({ functions: StackVmSystemStringLib });
+    const vm = new StackVM({ functions: StringSystemFunctions });
 
     it("should call str.compare(a, b)", () => {
         expect(vm.run([

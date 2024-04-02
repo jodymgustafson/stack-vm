@@ -1,9 +1,9 @@
-import { StackVM } from "../src/stack-vm"
-import { OpCode } from "../src/stackvm-types";
-import { StackVmSystemMathLib } from "../src/internal/stack-vm-math";
+import { MathSystemFunctions } from "../../src/internal/sys/math";
+import { StackVM } from "../../src/stackvm"
+import { OpCode } from "../../src/stackvm-types";
 
 describe("When test calling math functions", () => {
-    const vm = new StackVM({ functions: StackVmSystemMathLib, variables: { x: 5 } });
+    const vm = new StackVM({ functions: MathSystemFunctions, variables: { x: 5 } });
 
     it("should call abs(-11)", () => {
         expect(vm.run([

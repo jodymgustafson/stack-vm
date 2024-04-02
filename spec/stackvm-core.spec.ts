@@ -1,9 +1,9 @@
-import { StackVM } from "../src/stack-vm"
+import { MathSystemFunctions } from "../src/internal/sys/math";
+import { StackVM } from "../src/stackvm"
 import { OpCode } from "../src/stackvm-types";
-import { StackVmSystemMathLib } from "../src/internal/stack-vm-math";
 
 describe("When test core ops", () => {
-  const vm = new StackVM({ functions: StackVmSystemMathLib, variables: { x: 5 } });
+  const vm = new StackVM({ functions: MathSystemFunctions, variables: { x: 5 } });
 
   it("should push 0", () => {
     expect(vm.run([

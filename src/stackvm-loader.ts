@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import YAML from 'yaml';
 import path from "path";
-import { StackVmAssembler } from "./stack-vm-assembler";
+import { StackVmAssembler } from "./stackvm-assembler";
 import { StackVmFile, StackVmFunctionsMap } from "./stackvm-types";
 
 export class StackVmLoaderError extends Error {

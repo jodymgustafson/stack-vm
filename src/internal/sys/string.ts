@@ -1,5 +1,5 @@
-import { StackVmError } from "../stack-vm";
-import { SystemFunctionsMap } from "./types";
+import { StackVmError } from "../../stackvm";
+import { SystemFunctionsMap } from "../types";
 
 /**
  * The system library that contains string functions.
@@ -32,7 +32,7 @@ import { SystemFunctionsMap } from "./types";
  *   push 123.45        ; [123.45]
  *   call str.toString  ; ["123.45"]
  */
-export const StackVmSystemStringLib: SystemFunctionsMap = {
+export const StringSystemFunctions: SystemFunctionsMap = {
     "str.compare": s => {
         const b = s.pop();
         const a = s.pop();

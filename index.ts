@@ -10,18 +10,18 @@ Flags:
 */ 
 
 import { argv } from "process";
-import { StackVmSystemConsoleLib } from "./src/internal/stack-vm-console";
-import { StackVmSystemMathLib } from "./src/internal/stack-vm-math";
-import { StackVmSystemStringLib } from "./src/internal/stack-vm-string";
-import { StackVM, StackVmError } from "./src/stack-vm";
-import { StackVmLoader } from "./src/stack-vm-loader";
+import { StackVM, StackVmError } from "./src/stackvm";
+import { StackVmLoader } from "./src/stackvm-loader";
 import { StackVmConfig } from "./src/stackvm-types";
 import { instructionLogger } from "./src/internal/instruction-logger";
+import { StringSystemFunctions } from "./src/internal/sys/string";
+import { MathSystemFunctions } from "./src/internal/sys/math";
+import { ConsoleSystemFunctions } from "./src/internal/sys/console";
 
 const userFns = new StackVmLoader().loadSync(argv[2]);
 
 const config: StackVmConfig = {
-    functions: { ...userFns, ...StackVmSystemMathLib, ...StackVmSystemStringLib, ...StackVmSystemConsoleLib },
+    functions: { ...userFns, ...MathSystemFunctions, ...StringSystemFunctions, ...ConsoleSystemFunctions },
 };
 
 const flags = argv[3];

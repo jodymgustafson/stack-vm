@@ -1,9 +1,9 @@
-import { SystemFunctionsMap } from "./types";
+import { SystemFunctionsMap } from "../types";
 
 /**
  * The system library that contains math functions.
  */
-export const StackVmSystemMathLib: SystemFunctionsMap = {
+export const MathSystemFunctions: SystemFunctionsMap = {
     abs: s => Math.abs(s.pop()),
     acos: s => Math.acos(s.pop()),
     acosh: s => Math.acosh(s.pop()),

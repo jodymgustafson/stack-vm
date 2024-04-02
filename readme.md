@@ -87,6 +87,11 @@ There are built in system functions for basic mathematical and string functions.
     push "def"      # ["abc", "def"]
     call str.append  # ["abcdef"]
 
+You can interact with the command line using the console system functions.
+
+    call readln   # waits for user to enter text, text is on top of stack
+    call writeln  # writes the value on top of the stack to command line
+
 ## User Defined Functions
 User defined functions are programs within themselves that may accept parameters on the stack.
 

@@ -1,4 +1,4 @@
-import { StackVmAssembler, StackVmAssemblerError } from "../src/stack-vm-assembler"
+import { StackVmAssembler, StackVmAssemblerError } from "../src/stackvm-assembler"
 import { OpCode } from "../src/stackvm-types";
 
 describe("When assemble code", () => {

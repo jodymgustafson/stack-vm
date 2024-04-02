@@ -1,4 +1,4 @@
-import { StackVM } from "../src/stack-vm"
+import { StackVM } from "../src/stackvm"
 import { FunctionsMap, OpCode } from "../src/stackvm-types";
 
 describe("When test logic ops", () => {
