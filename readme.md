@@ -154,7 +154,7 @@ The assembler takes assembly code and compiles it into VM code that can be run b
     end:    end
 
 ## StackVM Loader
-The loader reads a YAML file that contains assembly code and compiles it.
+The loader reads a YAML file that contains assembly code and compiles it into a map of functions that can be executed by the VM.
 
 The file must start with `stackvm` and can define functions and import functions from other files.
 

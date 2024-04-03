@@ -39,10 +39,10 @@ export class StackVM {
      * @param code Code to run
      * @returns The value on top of the stack when the code finishes
      */
-    run(code?: StackVmCode): number | string {
+    run(code: StackVmCode): number | string {
         // Always start with an empty stack
         this.stack = [];
-        return this.runFrame(code ?? this.functions["main"] as StackVmCode);
+        return this.runFrame(code);
     }
     
     /**

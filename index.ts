@@ -18,29 +18,32 @@ import { StringSystemFunctions } from "./src/internal/sys/string";
 import { MathSystemFunctions } from "./src/internal/sys/math";
 import { ConsoleSystemFunctions } from "./src/internal/sys/console";
 
-const userFns = new StackVmLoader().loadSync(argv[2]);
-
-const config: StackVmConfig = {
-    functions: { ...userFns, ...MathSystemFunctions, ...StringSystemFunctions, ...ConsoleSystemFunctions },
-};
-
-const flags = argv[3];
-if (flags) {
-    if (flags.indexOf("s") > 0) {
-        config.stackLogger = (...s) => console.log(...s);
-    }
-    if (flags.indexOf("i") > 0) {
-        config.instructionLogger = instructionLogger;
-    }
-}
-
-const vm = new StackVM(config);
 try {
-    const result = vm.run();
-    console.log(result);
+    const userFns = new StackVmLoader().loadSync(argv[2]);
+    if (!userFns["main"]) {
+        throw new StackVmError(`File must contain a function named "main"`)
+    }
+
+    const config: StackVmConfig = {
+        functions: { ...userFns, ...MathSystemFunctions, ...StringSystemFunctions, ...ConsoleSystemFunctions },
+    };
+
+    const flags = argv[3];
+    if (flags) {
+        if (flags.indexOf("s") > 0) {
+            config.stackLogger = (...s) => console.log(...s);
+        }
+        if (flags.indexOf("i") > 0) {
+            config.instructionLogger = instructionLogger;
+        }
+    }
+
+    const vm = new StackVM(config);
+        const result = vm.run(userFns["main"]);
+        console.log(result);
 }
 catch (err) {
     if (err instanceof StackVmError) {
-        console.error("VM ERROR:", err.message);
+        console.error("ERROR:", err.message);
     }
 }
