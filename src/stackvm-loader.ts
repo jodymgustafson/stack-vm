@@ -4,6 +4,7 @@ import path from "path";
 import { StackVmAssembler } from "./stackvm-assembler";
 import { StackVmFile, StackVmFunctionsMap } from "./stackvm-types";
 
+/** An error thrown by StackVmLoader */
 export class StackVmLoaderError extends Error {
 }
 
@@ -14,13 +15,24 @@ export class StackVmLoader {
     constructor(readonly assembler = new StackVmAssembler()) {}
 
     /**
-     * Loads the program from a YAML file and returns a map of assembled functions ready to be used by the VM.
-     * @returns The contents of the file as a StackVmFile object
+     * Loads a YAML file and compiles the functions contained therein.
+     * @param filePath Path to the file to load
+     * @param [functions={}] Optional map of functions to add loaded functions into
+     * @returns The contents of the file compiled into a StackVmFunctionsMap
+     * @throws StackVmLoaderError if the file is not in the correct format
      */
     loadSync(filePath: string, functions: StackVmFunctionsMap = {}): StackVmFunctionsMap {
-        const s = fs.readFileSync(filePath, "utf-8");
-        const content = YAML.parse(s) as StackVmFile;
-        if (!content.stackvm) throw new StackVmLoaderError("File does not conform to StackVM format");
+        const content = this.loadFileSync(filePath);
+
+        if (content.stackvm.functions) {
+            for (const fn of content.stackvm.functions) {
+                const asm = this.assembler.assemble(fn.definition);
+                if (functions[fn.name]) {
+                    throw new StackVmLoaderError(`Function "${fn.name}" would be overwritten by definition in "${path.resolve(filePath)}"`)
+                }
+                functions[fn.name] = asm;
+            }
+        }
 
         if (content.stackvm.import) {
             const base = path.dirname(filePath);
@@ -29,13 +41,19 @@ export class StackVmLoader {
             }
         }
 
-        if (content.stackvm.functions) {
-            for (const fn of content.stackvm.functions) {
-                const asm = this.assembler.assemble(fn.definition);
-                functions[fn.name] = asm;
-            }
-        }
-
         return functions;
     } 
+
+    /**
+     * Loads a YAML file into a StackVmFile object
+     * @param filePath Path to the file to load
+     * @returns A StackVmFile object
+     * @throws StackVmLoaderError if the file is not in the correct format
+     */
+    loadFileSync(filePath: string): StackVmFile {
+        const s = fs.readFileSync(filePath, "utf-8");
+        const content = YAML.parse(s) as StackVmFile;
+        if (!content.stackvm) throw new StackVmLoaderError(`Error loading file "${filePath}": File does not conform to StackVM format`);
+        return content;
+    }
 }

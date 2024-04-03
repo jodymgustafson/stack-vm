@@ -1,0 +1,19 @@
+stackvm:
+  version: "0.0.0"
+  name: Test File
+  description: File for testing
+  import:
+  - ./import.yml
+  functions:
+  - name: main
+    description: Entry function
+    definition: |
+      start:
+        call test1
+        end
+  - name: test1
+    description: Entry function
+    definition: |
+      start:
+        push 1
+        end        

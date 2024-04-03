@@ -1,0 +1,11 @@
+stackvm:
+  version: "0.0.0"
+  name: Test import
+  description: File to test import
+  functions:
+  - name: test1
+    description: Test function 1
+    definition: |
+      start:
+        push 123
+        end

@@ -79,9 +79,9 @@ export type StackVmFile = {
         name: string;
         /** Description of the package */
         description?: string;
-        /** Array of any files to import */
+        /** Array of paths to files (relative to the current file) to import */
         import?: string[];
         /** Array of function definitions */
-        functions: StackVmFunction[];
+        functions?: StackVmFunction[];
     }
 };

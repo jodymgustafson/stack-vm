@@ -5,32 +5,32 @@ import { SystemFunctionsMap } from "../types";
  * The system library that contains string functions.
  * 
  * str.compare: Compare two strings and return -1, 0 or 1
- *   push "abc"        ; ["abc"]
- *   push "def"        ; ["def"]
- *   call str.compare   ; [-1]
+ *   push "abc"         # ["abc"]
+ *   push "def"         # ["def"]
+ *   call str.compare   # [-1]
  * 
  * str.concat(startStr:string, endStr:string): Concatenates two strings
- *   push "abc"        ; ["abc"]
- *   push "def"        ; ["def"]
- *   call str.append    ; ["abcdef"]
+ *   push "abc"         # ["abc"]
+ *   push "def"         # ["def"]
+ *   call str.append    # ["abcdef"]
  * 
  * str.sub(s:string, start:int, end:int): Returns a substring of a string
- *   push "abcdef"     ; ["abcdef"]
- *   push 1             ; ["abcdef", 1]
- *   push 4             ; ["abcdef", 1, 4]
- *   call str.sub       ; ["bcd"]
+ *   push "abcdef"      # ["abcdef"]
+ *   push 1             # ["abcdef", 1]
+ *   push 4             # ["abcdef", 1, 4]
+ *   call str.sub       # ["bcd"]
  * 
  * str.length(s:string): Returns the length of a string
- *   push "abcdef"     ; ["abcdef"]
- *   call str.length    ; [6]
+ *   push "abcdef"      # ["abcdef"]
+ *   call str.length    # [6]
  * 
  * str.parseNumber(s:string): Parses a string to a number
- *   push "123.45"     ; ["123.45"]
- *   call str.length    ; [123.45]
+ *   push "123.45"      # ["123.45"]
+ *   call str.length    # [123.45]
  * 
  * str.toString(n:number): Converts a number to a string
- *   push 123.45        ; [123.45]
- *   call str.toString  ; ["123.45"]
+ *   push 123.45        # [123.45]
+ *   call str.toString  # ["123.45"]
  */
 export const StringSystemFunctions: SystemFunctionsMap = {
     "str.compare": s => {

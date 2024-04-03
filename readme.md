@@ -156,3 +156,22 @@ The assembler takes assembly code and compiles it into VM code that can be run b
 ## StackVM Loader
 The loader reads a YAML file that contains assembly code and compiles it.
 
+The file must start with `stackvm` and can define functions and import functions from other files.
+
+For a program to run it must have a `main` function defined. This will be the function called to start the program.
+
+Example:
+```yaml
+stackvm:
+  version: "0.0.0"
+  name: Temp_Convert
+  description: Program to convert temperature between celsius and fahrenheit
+  import:
+  - ./metric-convert.yml
+  functions:
+  - name: main
+    description: Entry function
+    definition: |
+      start:
+      #...
+```
