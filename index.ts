@@ -17,6 +17,7 @@ import { instructionLogger } from "./src/internal/instruction-logger";
 import { StringSystemFunctions } from "./src/internal/sys/string";
 import { MathSystemFunctions } from "./src/internal/sys/math";
 import { ConsoleSystemFunctions } from "./src/internal/sys/console";
+import { StackVmAssemblerError } from "./src/stackvm-assembler";
 
 try {
     const userFns = new StackVmLoader().loadSync(argv[2]);
@@ -43,7 +44,14 @@ try {
         console.log(result);
 }
 catch (err) {
-    if (err instanceof StackVmError) {
+    if (err instanceof StackVmAssemblerError) {
+        console.error("ERROR:", err.message);
+        err.errors.forEach(e => console.error(e.line, ":", e.message));
+    }
+    else if (err instanceof StackVmError) {
+        console.error("ERROR:", err.message);
+    }
+    else {
         console.error("ERROR:", err.message);
     }
 }
