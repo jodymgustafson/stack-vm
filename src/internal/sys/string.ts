@@ -52,5 +52,5 @@ export const StringSystemFunctions: SystemFunctionsMap = {
     },
     "str.length": s => (s.pop() as string).length,
     "str.parseNumber": s => parseFloat(s.pop() as string),
-    "str.toString": s => s.pop().toString(),
+    "str.toString": s => s.pop()!.toString(),
 };

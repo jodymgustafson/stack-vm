@@ -25,10 +25,10 @@ export class StackVmAssembler {
     // Keeps track of the program counter for resolving labels
     private pc = 0;
     // Map of labels to code index
-    private labels: Record<string, number>;
+    private labels: Record<string, number> = {};
     // Array of parsed instructions
-    private instructions: AsmInstruction[];
-    private errors: AssemblerError[];
+    private instructions: AsmInstruction[] = [];
+    private errors: AssemblerError[] = [];
 
     /**
      * Assembles a StackVM program into code that can be executed by the VM.
@@ -79,7 +79,7 @@ export class StackVmAssembler {
     }
 
     private getLabelAddress(instr: AsmInstruction): number {
-        const addr = this.labels[instr.label];
+        const addr = this.labels[instr.label!];
         if (addr == null) this.addError(`Reference to unknown label "${instr.label}"`, instr.line);
         return addr;
     }
@@ -92,6 +92,11 @@ export class StackVmAssembler {
      */
     private parseLine(line: string, lineNo: number): void {
         const re = /\s*([_A-Za-z]\w*:)?\s*([A-Za-z]+)?\s*(\".*\"|[.]|[^#\s]+)?\s*(#.*)?/.exec(line);
+        if (!re) {
+            this.addError(`Unable to parse line ${line}`, lineNo);
+            return;
+        }
+
         // re[1] = label
         // re[2] = opcode
         // re[3] = value
@@ -127,7 +132,7 @@ export class StackVmAssembler {
     }
     
     private getOpCode(s: string, line: number): OpCode {
-        const oc = OpCode[s.toLowerCase()];
+        const oc = OpCode[s.toLowerCase() as keyof typeof OpCode];
         if (oc === undefined) this.addError(`Invalid opcode "${s}"`, line);
         return oc;
     }

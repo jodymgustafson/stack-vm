@@ -133,7 +133,7 @@ describe("When assemble code", () => {
                 ]);
             }
             catch (e) {
-                err = e;
+                err = e as StackVmAssemblerError;
             }    
         });
 
@@ -160,7 +160,7 @@ describe("When assemble code", () => {
                 );
             }
             catch (e) {
-                err = e;
+                err = e as StackVmAssemblerError;
             }    
         });
         it("should throw an error", () => {
@@ -190,7 +190,7 @@ describe("When assemble code", () => {
                 );
             }
             catch (e) {
-                err = e;
+                err = e as StackVmAssemblerError;
             }    
         });
         it("should throw an error", () => {

@@ -46,7 +46,7 @@ export type StackVmFunctionsMap = Record<string, StackVmCode>;
 /** Map of all system and user functions */
 export type FunctionsMap = Record<string, SystemFunction | StackVmCode>;
 
-export type LoggerFn = (...s) => void;
+export type LoggerFn = (...s: any[]) => void;
 
 /** The config for creating a new VM */
 export type StackVmConfig = {

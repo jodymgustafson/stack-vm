@@ -1,17 +1,16 @@
 stackvm:
   version: "0.0.0"
   name: examples/stackvm/test.mez
-  import:
-  - ./metric-convert.yml
   functions:
   - name: main
-    description: Entry function
+    description: main
     definition: |
+      push 0
       start:
       push ""
       put a$
       pop
-      __0: # while
+      __0: # begin while
       get a$
       push "q"
       call str.compare
@@ -40,11 +39,13 @@ stackvm:
       put f
       pop
       get f
-      call f2c
+      call convert_f2c
       put c
       pop
       push "Celsius: "
       get c
+      push 1
+      call roundDecimal
       call str.concat
       call writeln
       pop
@@ -66,11 +67,13 @@ stackvm:
       put c
       pop
       get c
-      call c2f
+      call convert_c2f
       put f
       pop
       push "Fahrenheit: "
       get f
+      push 1
+      call roundDecimal
       call str.concat
       call writeln
       pop
@@ -95,9 +98,57 @@ stackvm:
       __5: # end if
       __3: # end if
       bra __0
-      __1: # while end
+      __1: # end while
       pop
       push "Bye!"
       call writeln
       pop
+      end
+  - name: convert_c2f
+    description: convert_c2f
+    definition: |
+      start:
+      put c
+      pop
+      get c
+      push 9
+      mul
+      push 5
+      div
+      push 32
+      add
+      end
+  - name: convert_f2c
+    description: convert_f2c
+    definition: |
+      start:
+      put f
+      pop
+      get f
+      push 32
+      sub
+      push 5
+      mul
+      push 9
+      div
+      end
+  - name: roundDecimal
+    description: roundDecimal
+    definition: |
+      start:
+      put d
+      pop
+      put n
+      pop
+      push 10
+      get d
+      call pow
+      put m
+      pop
+      get n
+      get m
+      mul
+      call round
+      get m
+      div
       end

@@ -6,7 +6,9 @@
         "sourceMap": true,
         "declaration": true,
         "moduleResolution": "node",
-        "baseUrl": "./node_modules"
+        "baseUrl": "./node_modules",
+        "outDir": "dist",
+        "strict": true
     },
     "exclude": ["./node_modules", "./dist"]
 }

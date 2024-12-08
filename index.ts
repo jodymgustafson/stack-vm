@@ -51,7 +51,10 @@ catch (err) {
     else if (err instanceof StackVmError) {
         console.error("ERROR:", err.message);
     }
-    else {
+    else if (err instanceof Error) {
         console.error("ERROR:", err.message);
+    }
+    else {
+        console.error("ERROR:", err);
     }
 }

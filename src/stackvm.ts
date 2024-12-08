@@ -19,14 +19,14 @@ export class StackVM {
     private compareResult = 0;
 
     private functions: FunctionsMap;
-    private stackLogger: LoggerFn;
-    private instructionLogger: LoggerFn;
+    private stackLogger?: LoggerFn;
+    private instructionLogger?: LoggerFn;
 
     /**
      * @param config Configuration for the VM
      */
     constructor(readonly config: StackVmConfig) {
-        this.functions = config.functions;
+        this.functions = config.functions ?? {};
         if (config.variables) {
             this.varStack.push(config.variables);
         }
@@ -123,10 +123,10 @@ export class StackVM {
                     this.stack.push(this.compareResult);
                     break;
                 case OpCode.cmpc:
-                    this.compareResult = this.compare(this.peek(), code[++pc]);
+                    this.compareResult = this.compare(this.peek() as number, code[++pc]);
                     break;
                 case OpCode.cmpv:
-                    this.compareResult = this.compare(this.peek(), this.getVariable(code[++pc] as string));
+                    this.compareResult = this.compare(this.peek() as number, this.getVariable(code[++pc] as string));
                     break;
                 case OpCode.bra:
                     pc = code[++pc] as number - 1;
@@ -154,7 +154,7 @@ export class StackVM {
                 case OpCode.err:
                     throw new StackVmError(code[++pc] as string);
                 default:
-                    throw new StackVmError("Invalid opcode: " + OpCode[opcode]);
+                    throw new StackVmError("Invalid opcode: " + OpCode[opcode as keyof typeof OpCode]);
             }
         }
 
@@ -197,7 +197,7 @@ export class StackVM {
         if (typeof name !== "string") throw new StackVmError("Undefined variable name");
 
         // Walk up the stack frames to find the variable
-        let val: number | string;
+        let val: number | string | undefined;
         for (let i = this.varStack.length - 1; i >= 0 && val == null; i--) {
             val = this.varStack[i][name];
         }
@@ -221,10 +221,12 @@ export class StackVM {
      * @param offset Offset from top of stack, default is 0.
      * @throws If the stack is empty or offset too large
      */
-    private peek(offset = 0): number {
+    private peek(offset = 0): number | string {
         if (offset < 0) throw new StackVmError("Invalid peek offset: " + offset);
+        
         const v = this.stack[this.stack.length - 1 - offset];
         if (v == null) throw new StackVmError("Stack empty");
+        
         return v;
     }
 }
