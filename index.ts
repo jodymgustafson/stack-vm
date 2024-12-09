@@ -1,60 +1,32 @@
-/*
-Runs a StackVM program
-Format:
-    node index.js "path/to/file.yml" [-si]
-
-Flags:
-    Use -s to log stack debugging
-    Use -i to log instructions debugging
-    Use -si to log both
-*/ 
-
-import { argv } from "process";
-import { StackVM, StackVmError } from "./src/stackvm";
-import { StackVmLoader } from "./src/stackvm-loader";
-import { StackVmConfig } from "./src/stackvm-types";
-import { instructionLogger } from "./src/internal/instruction-logger";
-import { StringSystemFunctions } from "./src/internal/sys/string";
-import { MathSystemFunctions } from "./src/internal/sys/math";
 import { ConsoleSystemFunctions } from "./src/internal/sys/console";
+import { MathSystemFunctions } from "./src/internal/sys/math";
+import { StringSystemFunctions } from "./src/internal/sys/string";
+import { StackVM, StackVmError } from "./src/stackvm";
 import { StackVmAssemblerError } from "./src/stackvm-assembler";
+import { StackVmLoader } from "./src/stackvm-loader";
+import { LoggerFn, StackVmConfig, StackVmFunctionsMap } from "./src/stackvm-types";
 
-try {
-    const userFns = new StackVmLoader().loadSync(argv[2]);
-    if (!userFns["main"]) {
-        throw new StackVmError(`File must contain a function named "main"`)
-    }
+export { 
+    StackVmLoader,
+    StackVmError,
+    StackVmConfig,
+    StackVM,
+    StackVmAssemblerError,
+    StackVmFunctionsMap,
+    LoggerFn
+};
 
-    const config: StackVmConfig = {
+/**
+ * Gets a default StackVM instance with system functions and the specified user functions
+ * @param userFns Map of function names to their StackVM code
+ * @param stackLogger An optional logger for debugging the stack
+ * @param instrLogger An optional logger for debugging instructions
+ * @returns An instance of a StackVM
+ */
+export function getStackVM(userFns: StackVmFunctionsMap, stackLogger?: LoggerFn, instrLogger?: LoggerFn): StackVM {
+    return new StackVM({
         functions: { ...userFns, ...MathSystemFunctions, ...StringSystemFunctions, ...ConsoleSystemFunctions },
-    };
-
-    const flags = argv[3];
-    if (flags) {
-        if (flags.indexOf("s") > 0) {
-            config.stackLogger = (...s) => console.log(...s);
-        }
-        if (flags.indexOf("i") > 0) {
-            config.instructionLogger = instructionLogger;
-        }
-    }
-
-    const vm = new StackVM(config);
-        const result = vm.run(userFns["main"]);
-        console.log(result);
-}
-catch (err) {
-    if (err instanceof StackVmAssemblerError) {
-        console.error("ERROR:", err.message);
-        err.errors.forEach(e => console.error(e.line, ":", e.message));
-    }
-    else if (err instanceof StackVmError) {
-        console.error("ERROR:", err.message);
-    }
-    else if (err instanceof Error) {
-        console.error("ERROR:", err.message);
-    }
-    else {
-        console.error("ERROR:", err);
-    }
+        stackLogger,
+        instructionLogger: instrLogger
+    });
 }

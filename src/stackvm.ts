@@ -18,8 +18,11 @@ export class StackVM {
     // Result of the last compare
     private compareResult = 0;
 
+    /** The functions loaded into the VM */
     private functions: FunctionsMap;
+    /** An optional logger for debugging the stack */
     private stackLogger?: LoggerFn;
+    /** An optional logger for debugging the instructions */
     private instructionLogger?: LoggerFn;
 
     /**
@@ -35,11 +38,17 @@ export class StackVM {
     }
 
     /**
+     * Runs the program starting with function named "main" 
+     * @returns The value on top of the stack when the code finishes
+     */
+    run(): number | string;
+    /**
      * Runs the specified set of instructions
      * @param code Code to run
      * @returns The value on top of the stack when the code finishes
      */
-    run(code: StackVmCode): number | string {
+    run(code: StackVmCode): number | string;
+    run(code: StackVmCode = this.functions["main"] as StackVmCode): number | string {
         // Always start with an empty stack
         this.stack = [];
         return this.runFrame(code);

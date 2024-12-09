@@ -18,26 +18,26 @@ export class StackVmLoader {
      * Loads a YAML file and compiles the functions contained therein.
      * @param filePath Path to the file to load
      * @param [functions={}] Optional map of functions to add loaded functions into
-     * @returns The contents of the file compiled into a StackVmFunctionsMap
+     * @returns The contents of the file compiled into a StackVmFunctionsMap that can be run by the VM
      * @throws StackVmLoaderError if the file is not in the correct format
      */
-    loadSync(filePath: string, functions: StackVmFunctionsMap = {}): StackVmFunctionsMap {
+    loadAndCompileSync(filePath: string, functions: StackVmFunctionsMap = {}): StackVmFunctionsMap {
         const content = this.loadFileSync(filePath);
 
         if (content.stackvm.functions) {
             for (const fn of content.stackvm.functions) {
-                const asm = this.assembler.assemble(fn.definition);
+                const vmCode = this.assembler.assemble(fn.definition);
                 if (functions[fn.name]) {
                     throw new StackVmLoaderError(`Function "${fn.name}" would be overwritten by definition in "${path.resolve(filePath)}"`)
                 }
-                functions[fn.name] = asm;
+                functions[fn.name] = vmCode;
             }
         }
 
         if (content.stackvm.import) {
             const base = path.dirname(filePath);
             for (const dep of content.stackvm.import) {
-                this.loadSync(path.join(base, dep), functions);
+                this.loadAndCompileSync(path.join(base, dep), functions);
             }
         }
 

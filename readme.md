@@ -42,6 +42,25 @@ StackVM is a virtual machine that uses a stack for optimized computation of math
 
 ## Format
 
+- One line of code can contain
+  - zero or one label
+  - zero or one OpCode
+  - zero or one number or string argument for the OpCode
+  - zero or one comment
+
+### Valid lines of code
+
+    # Tests a random number
+    start:  call rand  # push a random number between 0 and 1
+            push .5
+            cmp        # compare random number to .5
+            blt isLess
+    isGreater:         # if greater return 1
+            push 1
+            bra end
+    isLess: push -1    # if less return -1
+    end:    end
+
 ### Number Format
 Numbers can be entered in decimal, hexadecimal or binary.
 
@@ -60,10 +79,19 @@ Anything on a line after a hash # is ignored.
     # This whole line is a comment
     push 3  # This is a comment
 
-## Example
+### Labels
+Use labels for branching. Labels must start with a letter or underscore and end with a colon.
+Examples:
+
+    start:
+    _isLessThan:
+    branch1:
+
+## Example code showing stack
 
 2 * (3 + x)^2
 
+    # op    | stack
     push 3  # [3]
     get  x  # [3,1] where x=1
     add     # [4]
@@ -76,6 +104,8 @@ Anything on a line after a hash # is ignored.
 ## System Functions
 There are built in system functions for basic mathematical and string functions. These can be called using the `call` operation.
 
+sin(pi/2)
+
     # pi is a sys function that pushes the value of PI on the stack
     call pi  # [3.14156]
     push 2   # [3.14156, 2]
@@ -83,9 +113,11 @@ There are built in system functions for basic mathematical and string functions.
     call sin # [1]
     end
 
-    push "abc"      # ["abc"]
-    push "def"      # ["abc", "def"]
-    call str.append  # ["abcdef"]
+There is also a string library.
+
+    push "abc"       # ["abc"]
+    push "def"       # ["abc", "def"]
+    call str.concat  # ["abcdef"]
 
 You can interact with the command line using the console system functions.
 
@@ -104,7 +136,6 @@ User defined functions are programs within themselves that may accept parameters
     push 9
     div      # r = r / 9
     end
-
 
 ## VM Code
 The instructions sent to the VM are a stream of numbers that represent OpCodes followed by zero or one number or string arguments.
@@ -132,29 +163,19 @@ With opcodes:
 ]
 ```
 
-## StackVM Assembler
-The assembler takes assembly code and compiles it into VM code that can be run by the VM.
-- One line of code can contains
-  - zero or one label
-  - zero or one OpCode
-  - zero or one number or string argument for the OpCode
-  - zero or one comment
+## Run a program from command line
+To run a StackVM program from the command line use stackvm.js.
+The program must have an entry function named `main`.
 
-### Valid lines of code
-
-    # Tests a random number
-    start:  call rand  # push a random number between 0 and 1
-            push .5
-            cmp        # compare random number to .5
-            blt isLess
-    isGreater:         # if greater return 1
-            push 1
-            bra end
-    isLess: push -1    # if less return -1
-    end:    end
+    node dist/stackvm.js "path/to/file.yml" [-si]
 
 ## StackVM Loader
+If you want to create your own app that loads and runs StackVM files use the StackVM loader.
 The loader reads a YAML file that contains assembly code and compiles it into a map of functions that can be executed by the VM.
+
+    const userFns = new StackVmLoader().loadAndCompileSync(filePath);
+    const vm = getStackVM(userFns);
+    const result = vm.run();
 
 The file must start with `stackvm` and can define functions and import functions from other files.
 
@@ -175,3 +196,17 @@ stackvm:
       start:
       #...
 ```
+
+## StackVM Assembler
+If you want to run programs from any program defined in a string use the assembler.
+The assembler takes assembly code and compiles it into VM code that can be run by the VM.
+
+To get an instance of the VM initialized with the StackVM built in system functions call the getStackVM() function.
+You can pass in any user defined functions.
+Then call the VM's run() method passing in the code to execute.
+If you don't give it code to execute it will look for a function named `main` and execute that.
+
+    const assembler = new StackVmAssembler();
+    const vmCode = assembler.assemble(asm);
+    const vm = getStackVM(vmCode);
+    const result = vm.run();

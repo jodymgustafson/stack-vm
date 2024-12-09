@@ -18,7 +18,7 @@ describe("When use loader", () => {
     });
 
     it("should read and compile the file", () => {
-        const fns = loader.loadSync("./spec/files/test.yml");
+        const fns = loader.loadAndCompileSync("./spec/files/test.yml");
         expect(fns).toEqual({
             test1: [ 1, 123, 7 ],
             main: [ 6, 'test1', 7 ]
@@ -26,17 +26,17 @@ describe("When use loader", () => {
     });
 
     it("should get an error if the file doesn't exist", () => {
-        expect(() => loader.loadSync("./spec/files/foo.yml"))
+        expect(() => loader.loadAndCompileSync("./spec/files/foo.yml"))
             .toThrowError(`ENOENT: no such file or directory, open '${path.resolve("./spec/files/foo.yml")}'`);
     });
 
     it("should get an error if the file isn't in correct format", () => {
-        expect(() => loader.loadSync("./spec/files/bad.yml"))
+        expect(() => loader.loadAndCompileSync("./spec/files/bad.yml"))
         .toThrowError(`Error loading file "./spec/files/bad.yml": File does not conform to StackVM format`);
     });
 
     it("should get an error if the file contains duplicate functions", () => {
-        expect(() => loader.loadSync("./spec/files/test-bad.yml"))
+        expect(() => loader.loadAndCompileSync("./spec/files/test-bad.yml"))
         .toThrowError(`Function "test1" would be overwritten by definition in "${path.resolve("./spec/files/import.yml")}"`);
     });
 });

@@ -1,6 +1,6 @@
 {
   "name": "stack-vm",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Virtual machine that uses a stack for optimized computation of mathematical expressions.",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jasmine": "^5.1.1",
-    "@types/node": "^20.11.30",
+    "@types/node": "^20.17.9",
     "jasmine": "^5.1.0",
     "typescript": "^5.2.2"
   },
