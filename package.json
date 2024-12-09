@@ -4,7 +4,9 @@
   "description": "Virtual machine that uses a stack for optimized computation of mathematical expressions.",
   "main": "index.js",
   "scripts": {
-    "test": "jasmine"
+    "test": "jasmine",
+    "clean": "tsc --build --clean",
+    "build": "tsc"
   },
   "author": "JM Gustafson",
   "license": "ISC",

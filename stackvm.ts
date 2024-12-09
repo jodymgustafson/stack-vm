@@ -28,7 +28,6 @@ try {
     if (!userFns["main"]) {
         throw new StackVmError(`File must contain a function named "main"`)
     }
-
     
     let stackLogger: LoggerFn | undefined;
     let instrLogger: LoggerFn | undefined;
