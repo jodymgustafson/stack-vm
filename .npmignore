@@ -1,4 +1,4 @@
-./src
-./*.ts
+/src
+/*.ts
 .vscode
 spec
