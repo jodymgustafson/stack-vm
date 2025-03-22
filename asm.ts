@@ -2,9 +2,10 @@
     Loads a StackVM yaml file and compiles it into bytecode that the VM can run.
 
     Format:
-        node dist/asm.js "path/to/file.yml" [-d]
+        node dist/asm.js "path/to/file.yml" [-fd]
 
     Flags:
+        Use -f to format output
         Use -d to log debugging info (line numbers and opcode names)
 */
 
@@ -13,6 +14,7 @@ import { StackVmLoader } from "./src/stackvm-loader";
 import { StackVmAssemblerError } from "./src/stackvm-assembler";
 import { OpCode, StackVmAtom, StackVmCode } from "./src/stackvm-types";
 
+/** Maps opcodes that have params to the number of params it requires */
 const OpCodesWithParam: Record<number, number> = {
     [OpCode.push]: 1,
     [OpCode.get]: 1,
@@ -28,6 +30,7 @@ const OpCodesWithParam: Record<number, number> = {
     [OpCode.blt]: 1,
     [OpCode.bgt]: 1,
 }
+const BranchOpCodes = [OpCode.bra, OpCode.beq, OpCode.bne, OpCode.blt, OpCode.bgt];
 
 try {
     if (argv.length < 3) {
@@ -35,14 +38,20 @@ try {
         exit();
     }
 
-    const userFns = new StackVmLoader().loadAndCompileSync(argv[2]);
-    const logDebug = (argv[3] === "-d");
+    const logDebug = (argv[3]?.indexOf("d") >= 0);
+    const isFormatted = (argv[3]?.indexOf("f") >= 0);
 
-    for (const fnName in userFns) {
-        console.log(`Function "${fnName}":`);
-        const fn = userFns[fnName];
-        if (logDebug) outputWithDebug(fn);
-        else outputBytecode(fn);
+    const userFns = new StackVmLoader().loadAndCompileSync(argv[2]);
+    if (!(logDebug || isFormatted)) {
+        console.log(JSON.stringify(userFns));
+    }
+    else {
+        for (const fnName in userFns) {
+            console.log(`${fnName}:`);
+            const fn = userFns[fnName];
+            if (logDebug) outputWithDebug(fn);
+            else outputBytecode(fn);
+        }
     }
 }
 catch (err) {
@@ -70,7 +79,7 @@ function outputBytecode(fn: StackVmCode): void {
             codes.push(getValue(fn[++i]));
     }
 
-    console.log(codes.join(" "));
+    console.log("  ", codes.join(","));
 }
 
 function outputWithDebug(fn: StackVmCode): void {
@@ -78,7 +87,7 @@ function outputWithDebug(fn: StackVmCode): void {
     for (let i = 0; i < fn.length; i++) {
         const code = fn[i];
         const opCode = code.toString(16).padStart(2, "0");
-        let line = `${i.toString(16).padStart(4, "0")} ${OpCode[code as OpCode]?.padEnd(4)}:  ${opCode}`;
+        let line = `  ${i.toString(16).padStart(4, "0")} ${OpCode[code as OpCode]?.padEnd(4)}:  ${opCode}`;
 
         const cnt = OpCodesWithParam[code as number] ?? 0;
         if (cnt > 0)
@@ -104,6 +113,6 @@ function getValue(code: StackVmAtom, isAddress = false): string {
 }
 
 function isBranchOpCode(code: StackVmAtom): boolean {
-    return [OpCode.bra, OpCode.beq, OpCode.bne, OpCode.blt, OpCode.bgt].includes(code as OpCode);
+    return BranchOpCodes.includes(code as OpCode);
 }
 
