@@ -169,6 +169,11 @@ The program must have an entry function named `main`.
 
     node dist/stackvm.js "path/to/file.yml" [-si]
 
+### Flags:
+    Use -s to log stack debugging
+    Use -i to log instructions debugging
+    Use -si to log both
+
 ## StackVM Loader
 If you want to create your own app that loads and runs StackVM files use the StackVM loader.
 The loader reads a YAML file that contains assembly code and compiles it into a map of functions that can be executed by the VM.
@@ -210,3 +215,12 @@ If you don't give it code to execute it will look for a function named `main` an
     const vmCode = assembler.assemble(asm);
     const vm = getStackVM(vmCode);
     const result = vm.run();
+
+## Run the assembler from command line
+If you want to only run the assembler and see the output use asm.js.
+
+    node dist/asm.js "path/to/file.yml" [-f][-d]
+
+### Flags:
+    Use -f to format output
+    Use -d to log debugging info (line numbers and opcode names)

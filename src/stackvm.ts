@@ -67,7 +67,7 @@ export class StackVM {
         for (let pc = 0; pc < code.length; pc++) {
             this.stackLogger && this.stackLogger(this.stack);
             const opcode = code[pc];
-            this.instructionLogger?.(pc, opcode, code[pc + 1]);
+            this.instructionLogger?.(pc, opcode, code[pc + 1], code[pc + 1]);
             // Noop does nothing
             if (opcode === OpCode.nop) continue;
             // End immediately breaks out of the loop

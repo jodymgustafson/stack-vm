@@ -1,36 +1,19 @@
 /*
-    Loads a StackVM yaml file and compiles it into bytecode that the VM can run.
+Loads a StackVM yaml file and compiles it into bytecode that the VM can run and writes it out.
 
-    Format:
-        node dist/asm.js "path/to/file.yml" [-fd]
+Format:
+    node dist/asm.js "path/to/file.yml" [-f][-d]
 
-    Flags:
-        Use -f to format output
-        Use -d to log debugging info (line numbers and opcode names)
+Flags:
+    Use -f to format output
+    Use -d to log debugging info (line numbers and opcode names)
 */
 
 import { argv, exit } from "process";
 import { StackVmLoader } from "./src/stackvm-loader";
 import { StackVmAssemblerError } from "./src/stackvm-assembler";
 import { OpCode, StackVmAtom, StackVmCode } from "./src/stackvm-types";
-
-/** Maps opcodes that have params to the number of params it requires */
-const OpCodesWithParam: Record<number, number> = {
-    [OpCode.push]: 1,
-    [OpCode.get]: 1,
-    [OpCode.put]: 1,
-    [OpCode.putc]: 2,
-    [OpCode.call]: 1,
-    [OpCode.err]: 1,
-    [OpCode.cmpc]: 1,
-    [OpCode.cmpv]: 1,
-    [OpCode.bra]: 1,
-    [OpCode.beq]: 1,
-    [OpCode.bne]: 1,
-    [OpCode.blt]: 1,
-    [OpCode.bgt]: 1,
-}
-const BranchOpCodes = [OpCode.bra, OpCode.beq, OpCode.bne, OpCode.blt, OpCode.bgt];
+import { getParameterCount, isBranchOpCode } from "./src/internal/utils";
 
 try {
     if (argv.length < 3) {
@@ -50,7 +33,7 @@ try {
             console.log(`${fnName}:`);
             const fn = userFns[fnName];
             if (logDebug) outputWithDebug(fn);
-            else outputBytecode(fn);
+            else outputWithFormatting(fn);
         }
     }
 }
@@ -67,16 +50,16 @@ catch (err) {
     }
 }
 
-function outputBytecode(fn: StackVmCode): void {
+function outputWithFormatting(fn: StackVmCode): void {
     const codes = [];
     for (let i = 0; i < fn.length; i++) {
         const opCode = fn[i] as OpCode;
         codes.push(toHexString(opCode));
-        const cnt = OpCodesWithParam[opCode as number] ?? 0;
+        const cnt = getParameterCount(opCode);
         if (cnt > 0)
-            codes.push(getValue(fn[++i]));
+            codes.push(getValue(fn[++i], opCode));
         if (cnt > 1)
-            codes.push(getValue(fn[++i]));
+            codes.push(getValue(fn[++i], opCode));
     }
 
     console.log("  ", codes.join(","));
@@ -88,11 +71,11 @@ function outputWithDebug(fn: StackVmCode): void {
         const opCode = fn[i] as OpCode;
         let line = `  ${toAddressString(i)} ${OpCode[opCode]?.padEnd(4)}:  ${toHexString(opCode)}`;
 
-        const cnt = OpCodesWithParam[opCode as number] ?? 0;
+        const cnt = getParameterCount(opCode);
         if (cnt > 0)
-            line += ` ${getValue(fn[++i], isBranchOpCode(opCode))}`;
+            line += ` ${getValue(fn[++i], opCode, isBranchOpCode(opCode))}`;
         if (cnt > 1)
-            line += ` ${getValue(fn[++i])}`;
+            line += ` ${getValue(fn[++i], opCode)}`;
 
         codes.push(line);
     }
@@ -100,25 +83,20 @@ function outputWithDebug(fn: StackVmCode): void {
     console.log(codes.join("\n"));
 }
 
-function toAddressString(i: number) {
-    return i.toString(16).toUpperCase().padStart(4, "0");
+function toAddressString(n: number) {
+    return n.toString(16).toUpperCase().padStart(4, "0");
 }
 
-function toHexString(code: OpCode) {
-    return code.toString(16).toUpperCase().padStart(2, "0");
+function toHexString(opCode: OpCode) {
+    return opCode.toString(16).toUpperCase().padStart(2, "0");
 }
 
-function getValue(atom: StackVmAtom, isAddress = false): string {
+function getValue(atom: StackVmAtom, opCode: OpCode, isAddress = false): string {
     if (typeof atom === "string") {
-        return `"${atom}"`;
+        return opCode === OpCode.push ? `"${atom}"` : `(${atom})`;
     }
     else if (typeof atom === "number") {
         return (isAddress ? toAddressString(atom) : toHexString(atom));
     }
     return atom;
 }
-
-function isBranchOpCode(code: StackVmAtom): boolean {
-    return BranchOpCodes.includes(code as OpCode);
-}
-
