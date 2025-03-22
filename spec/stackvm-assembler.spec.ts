@@ -1,4 +1,4 @@
-import { StackVmAssembler, StackVmAssemblerError } from "../src/stackvm-assembler"
+import { StackVmAssembler, StackVmAssemblerError } from "../src/stackvm-assembler";
 import { OpCode } from "../src/stackvm-types";
 
 describe("When assemble code", () => {
@@ -47,7 +47,7 @@ describe("When assemble code", () => {
                 { opcode: OpCode.add, value: undefined, line: 5 },
             ]);
             expect(prog).toEqual([OpCode.push, 2, OpCode.push, 3, OpCode.add]);
-        });    
+        });
     });
 
     describe("and has quoted strings", () => {
@@ -60,7 +60,7 @@ describe("When assemble code", () => {
                 { opcode: OpCode.push, value: "this string", line: 0 },
             ]);
             expect(prog).toEqual([OpCode.push, "this string"]);
-        });    
+        });
     });
 
     describe("and has branches", () => {
@@ -90,7 +90,7 @@ describe("When assemble code", () => {
             ]);
             // console.log(JSON.stringify(assembler["instructions"]));
             expect(assembler["instructions"]).toEqual([
-                { opcode: OpCode.bra, line: 3, label: "init"},
+                { opcode: OpCode.bra, line: 3, label: "init" },
                 { opcode: 0, line: 4, value: undefined },
                 { opcode: OpCode.push, value: 3, line: 6 }, // init
                 { opcode: OpCode.cmp, value: undefined, line: 7 },
@@ -134,7 +134,7 @@ describe("When assemble code", () => {
             }
             catch (e) {
                 err = e as StackVmAssemblerError;
-            }    
+            }
         });
 
         it("should throw an error", () => {
@@ -161,7 +161,7 @@ describe("When assemble code", () => {
             }
             catch (e) {
                 err = e as StackVmAssemblerError;
-            }    
+            }
         });
         it("should throw an error", () => {
             expect(err).toBeDefined();
@@ -191,7 +191,7 @@ describe("When assemble code", () => {
             }
             catch (e) {
                 err = e as StackVmAssemblerError;
-            }    
+            }
         });
         it("should throw an error", () => {
             expect(err).toBeDefined();

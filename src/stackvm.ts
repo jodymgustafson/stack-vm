@@ -53,7 +53,7 @@ export class StackVM {
         this.stack = [];
         return this.runFrame(code);
     }
-    
+
     /**
      * Runs the specified set of instructions in a new context
      * @param code Code to run
@@ -63,11 +63,11 @@ export class StackVM {
         // Push a new variables context
         this.varStack.push({});
 
-        let tmp: number | string;    
+        let tmp: number | string;
         for (let pc = 0; pc < code.length; pc++) {
             this.stackLogger && this.stackLogger(this.stack);
             const opcode = code[pc];
-            this.instructionLogger && this.instructionLogger(opcode, code[pc + 1]);
+            this.instructionLogger?.(pc, opcode, code[pc + 1]);
             // Noop does nothing
             if (opcode === OpCode.nop) continue;
             // End immediately breaks out of the loop
@@ -232,10 +232,10 @@ export class StackVM {
      */
     private peek(offset = 0): number | string {
         if (offset < 0) throw new StackVmError("Invalid peek offset: " + offset);
-        
+
         const v = this.stack[this.stack.length - 1 - offset];
         if (v == null) throw new StackVmError("Stack empty");
-        
+
         return v;
     }
 }

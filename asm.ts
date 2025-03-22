@@ -70,9 +70,9 @@ catch (err) {
 function outputBytecode(fn: StackVmCode): void {
     const codes = [];
     for (let i = 0; i < fn.length; i++) {
-        const code = fn[i];
-        codes.push(code.toString(16).padStart(2, "0"));
-        const cnt = OpCodesWithParam[code as number] ?? 0;
+        const opCode = fn[i] as OpCode;
+        codes.push(toHexString(opCode));
+        const cnt = OpCodesWithParam[opCode as number] ?? 0;
         if (cnt > 0)
             codes.push(getValue(fn[++i]));
         if (cnt > 1)
@@ -85,13 +85,12 @@ function outputBytecode(fn: StackVmCode): void {
 function outputWithDebug(fn: StackVmCode): void {
     const codes = [];
     for (let i = 0; i < fn.length; i++) {
-        const code = fn[i];
-        const opCode = code.toString(16).padStart(2, "0");
-        let line = `  ${i.toString(16).padStart(4, "0")} ${OpCode[code as OpCode]?.padEnd(4)}:  ${opCode}`;
+        const opCode = fn[i] as OpCode;
+        let line = `  ${toAddressString(i)} ${OpCode[opCode]?.padEnd(4)}:  ${toHexString(opCode)}`;
 
-        const cnt = OpCodesWithParam[code as number] ?? 0;
+        const cnt = OpCodesWithParam[opCode as number] ?? 0;
         if (cnt > 0)
-            line += ` ${getValue(fn[++i], isBranchOpCode(code))}`;
+            line += ` ${getValue(fn[++i], isBranchOpCode(opCode))}`;
         if (cnt > 1)
             line += ` ${getValue(fn[++i])}`;
 
@@ -101,15 +100,22 @@ function outputWithDebug(fn: StackVmCode): void {
     console.log(codes.join("\n"));
 }
 
-function getValue(code: StackVmAtom, isAddress = false): string {
-    if (typeof code === "string") {
-        return `'${code}'`;
+function toAddressString(i: number) {
+    return i.toString(16).toUpperCase().padStart(4, "0");
+}
+
+function toHexString(code: OpCode) {
+    return code.toString(16).toUpperCase().padStart(2, "0");
+}
+
+function getValue(atom: StackVmAtom, isAddress = false): string {
+    if (typeof atom === "string") {
+        return `"${atom}"`;
     }
-    else if (typeof code === "number") {
-        const s = code.toString(16);
-        return (isAddress ? s.padStart(4, "0") : s);
+    else if (typeof atom === "number") {
+        return (isAddress ? toAddressString(atom) : toHexString(atom));
     }
-    return "ERROR: Invalid code type";
+    return atom;
 }
 
 function isBranchOpCode(code: StackVmAtom): boolean {
